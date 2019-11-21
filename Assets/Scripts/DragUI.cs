@@ -5,24 +5,53 @@ using UnityEngine.EventSystems;
  
 public class DragUI: MonoBehaviour, IBeginDragHandler, IDragHandler
 {
-    private GameObject panal;//时间轴一
+    [SerializeField]private GameObject panal;//时间轴一
     RectTransform rt;
  
     // 位置偏移量
     Vector3 offset = Vector3.zero;
     // 最小、最大X、Y坐标
     float minX, maxX, minY, maxY;
-    
+    //道具位置初始值
+    private readonly float locationX = 167;
+    private readonly float locationY = 232;
+    //
+    private bool inpanal;
+    //原始宽度
+    private float p_width = 100;
+    private float p_height = 100;
+    //进入panal里的宽度
+    private float m_width = 40.0f;
+ 
  
     void Start()
     {
+        inpanal = false;
         rt = GetComponent<RectTransform>();
         transform.SetSiblingIndex(1);
         
     }
     private void Update()
     {
-        
+        if(Input.GetKeyUp(KeyCode.Mouse0))
+        {
+            float nowX = gameObject.transform.position.x;
+            float nowY = gameObject.transform.position.y;
+            if (nowX > 335 && nowY > 229 && nowY < 280) inpanal = true;
+            if (inpanal == false)
+            {
+                gameObject.transform.position = new Vector3(locationX, locationY, 0.0f);
+                gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(p_width, p_height);
+            }
+            else
+            {
+                gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(m_width, 50.4f);
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            inpanal = false;
+        }
     
     }
     public void OnBeginDrag(PointerEventData eventData)
@@ -64,6 +93,6 @@ public class DragUI: MonoBehaviour, IBeginDragHandler, IDragHandler
     }
     public void OnEndDrag(PointerEventData eventData)
     {
-
+        
     }
 }
