@@ -39,14 +39,13 @@ public class TimeHolder: Place {
 
     public override void DragEffectBegin(Dragable d) {
         DragRect = d.GetComponent<RectTransform>();
-        Shadow = Instantiate<GameObject>(ShadowModel); // 生成阴影
-        Shadow.transform.SetParent(transform.parent);
+        Shadow = Instantiate<GameObject>(ShadowModel,transform); // 生成阴影
         ShadowRect = Shadow.GetComponent<RectTransform>();
         Shadow.GetComponent<CanvasRenderer>().SetAlpha(0);
     }
 
     public override bool DragEffectEnd() {
-        bool flag;
+        bool flag = false;
         if (DragRect.position.x > minx &&
             DragRect.position.y > miny &&
             DragRect.position.x + DragRect.rect.width < maxx &&
@@ -56,7 +55,7 @@ public class TimeHolder: Place {
             rt.position = ShadowRect.position;
             rt.transform.SetParent(transform.parent);
             flag = true;
-        } else flag = false;
+        } 
         Shadow.SetActive(false); Destroy(Shadow);
         Shadow = null; ShadowRect = null;
         DragRect = null; return flag;
