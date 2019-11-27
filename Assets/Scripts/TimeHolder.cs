@@ -12,12 +12,15 @@ public class TimeHolder: Place {
     // 阴影、自己、拖动物体的坐标系、拖动的步骤
     private RectTransform ShadowRect, SelfRect, DragRect;
     private CookingStep dragStep;
+    private CanvasRenderer ShadowRender;
     // 自己的有效区域
     private float minx, maxx, miny, maxy;
 
     void Start() {
-        DragRect = null;
         SelfRect = GetComponent<RectTransform>();
+        Shadow = this.transform.GetChild(0).gameObject;
+        ShadowRect = this.transform.GetChild(0).GetComponent<RectTransform>();
+        ShadowRender = Shadow.GetComponent<CanvasRenderer>();
         minx = SelfRect.position.x;
         maxx = SelfRect.position.x + SelfRect.rect.width;
         miny = SelfRect.position.y - 100;
@@ -26,26 +29,25 @@ public class TimeHolder: Place {
 
     // Update is called once per frame
     void Update() {
-        if (Shadow) {
-            CanvasRenderer ShadowRen = Shadow.GetComponent<CanvasRenderer>();
+        if (DragRect) {
             if (DragRect.position.x > minx &&
                 DragRect.position.y > miny &&
                 DragRect.position.x + DragRect.rect.width < maxx &&
                 DragRect.position.y + DragRect.rect.height < maxy) { // 在区域内
                 Vector2 position = new Vector2(DragRect.position.x, SelfRect.position.y);
                 ShadowRect.position = position; // 让阴影对准拖动物体
-                if (ShadowRen.GetAlpha() < 0.5) {
-                    ShadowRen.SetAlpha(1); // 让阴影显示出来
+                if (ShadowRender.GetAlpha() < 0.5) {
+                    ShadowRender.SetAlpha(1); // 让阴影显示出来
                 }
-            } else if (ShadowRen.GetAlpha() > 0.5) ShadowRen.SetAlpha(0); // 让阴影隐藏
+            } else if (ShadowRender.GetAlpha() > 0.5) ShadowRender.SetAlpha(0); // 让阴影隐藏
         }
     }
 
     public override void DragEffectBegin(Dragable d) {
         DragRect = d.GetComponent<RectTransform>();
-        Shadow = Instantiate<GameObject>(ShadowModel,transform); // 生成阴影
-        ShadowRect = Shadow.GetComponent<RectTransform>();
-        Shadow.GetComponent<CanvasRenderer>().SetAlpha(0);
+        //Shadow = Instantiate<GameObject>(ShadowModel,transform); // 生成阴影
+        //ShadowRect = Shadow.GetComponent<RectTransform>();
+        //Shadow.GetComponent<CanvasRenderer>().SetAlpha(0);
         dragStep = d.GetComponent<CookingStep>();
         ShadowRect.sizeDelta = new Vector2(unitWidth * dragStep.Time, unitHeight);
     }
@@ -65,9 +67,11 @@ public class TimeHolder: Place {
             DragRect.transform.parent = this.transform;
             DragRect.SetAsFirstSibling();
             flag = true;
-        } 
-        Shadow.SetActive(false); Destroy(Shadow);
-        Shadow = null; ShadowRect = null;
+        }
+        ShadowRender.SetAlpha(0);
+        ShadowRect.SetAsFirstSibling();
+        //Destroy(Shadow);
+        //Shadow = null; ShadowRect = null;
         //DragRect = null;
         return flag;
     }

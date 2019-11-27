@@ -41,13 +41,15 @@ public class MenuHolder: Place {
         stepCollection = new CookingStepCollection();
         foreach (JsonData i in jd)
         {
-            CookingStep cs = new CookingStep((string)i["名字"], (int)i["持续时间"], (bool)i["能否同时"]);
+            CookingStep cs = new CookingStep((string)i["名字"], (int)i["ID"], (int)i["持续时间"], (bool)i["能否同时"]);
             CookingStep tmp = Instantiate(stepPrefab, this.transform);
+            CookingStep tmp2 = Instantiate(stepPrefab, this.transform);
+            CookingStep tmp3 = Instantiate(stepPrefab, this.transform);
             tmp.origin = tmp.transform.position;
             tmp.Copy(cs);
             var drag = tmp.GetComponent<Dragable>();
             drag.fromPlace =GameObject.FindWithTag("MenuHolder").GetComponent<Place>();
-            drag.toPlace = GameObject.FindWithTag("TimeHolder").GetComponent<Place>();
+            //drag.toPlace = GameObject.FindWithTag("TimeHolder1").GetComponent<Place>();
             stepCollection.CookingSteps.Add(tmp);
         }
         for (int i = 0; i < jd.Count; i++)

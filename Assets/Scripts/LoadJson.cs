@@ -11,7 +11,7 @@ public static class LoadJson {
         JsonData jd = JsonMapper.ToObject(jr);
         CookingStepCollection csc = new CookingStepCollection();
         foreach (JsonData i in jd) {
-            CookingStep cs = new CookingStep((string)i["名字"], (int)i["持续时间"], (bool)i["能否同时"]);
+            CookingStep cs = new CookingStep((string)i["名字"],(int)i["ID"], (int)i["持续时间"], (bool)i["能否同时"]);
             
             csc.CookingSteps.Add(cs);
         }

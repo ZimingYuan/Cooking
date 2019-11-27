@@ -6,6 +6,8 @@ TagManager:
   tags:
   - MenuHolder
   - TimeHolder
+  - TimeHolder1
+  - TimeHolder2
   layers:
   - Default
   - TransparentFX

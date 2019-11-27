@@ -7,37 +7,72 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     [SerializeField] public Place fromPlace, toPlace;
     // fromPosition: 拖之前的坐标，offset: 鼠标拖动前点击位置和物体原点位移
     private Vector2 fromPosition, offset;
-    // 这个物体的坐标系
-    private RectTransform rt;
-    //Menu
-    private GameObject menu;
+    //Holder
+    private TimeHolder timeHolder1;
+    private TimeHolder timeHolder2;
+    private MenuHolder MenuHolder;
+    //RectTransfrom
+    private RectTransform dragRect;
+    private RectTransform timeRect1;
+    private RectTransform timeRect2;
+    private RectTransform menuRect;
 
     void Start() {
-        rt = GetComponent<RectTransform>();
-        fromPosition = rt.position;
+        dragRect = GetComponent<RectTransform>();
+        fromPosition = dragRect.position;
         transform.SetSiblingIndex(1); // 把这个物体放在最上，防止按不到
-        menu = GameObject.FindWithTag("MenuHolder");
+
+        MenuHolder = GameObject.FindWithTag("MenuHolder").GetComponent<MenuHolder>();
+        timeHolder1 = GameObject.FindWithTag("TimeHolder1").GetComponent<TimeHolder>();
+        timeHolder2 = GameObject.FindWithTag("TimeHolder2").GetComponent<TimeHolder>();
+
+        menuRect = MenuHolder.GetComponent<RectTransform>();
+        timeRect1 = timeHolder1.GetComponent<RectTransform>();
+        timeRect2 = timeHolder2.GetComponent<RectTransform>();
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
-        Debug.Log("1111");
-        offset = eventData.position - new Vector2(rt.position.x, rt.position.y);
+        offset = eventData.position - new Vector2(dragRect.position.x, dragRect.position.y);
         fromPosition = this.transform.position;
-        toPlace.DragEffectBegin(this);
+        Debug.Log(fromPosition);
+        timeHolder1.DragEffectBegin(this);
+        timeHolder2.DragEffectBegin(this);
     }
 
     public void OnDrag(PointerEventData eventData) {
-        rt.position = eventData.position - offset;
+        dragRect.position = eventData.position - offset;
     }
 
     public void OnEndDrag(PointerEventData eventData) {
-        if (toPlace.DragEffectEnd(this)) { // 如果到达了拖入区域
-            fromPlace.DragAway();
-            //gameObject.SetActive(false); Destroy(gameObject);
-        } else { // 回去
-            //rt.position = this.GetComponent<CookingStep>().origin;
-            //transform.parent = menu.transform;
-            rt.position = fromPosition;
+        toPlace = null;
+        if (dragRect.position.x > timeRect1.position.x)
+        {
+            if (dragRect.position.y >= timeRect1.position.y - timeRect1.rect.height &&
+                dragRect.position.y <= timeRect1.position.y + timeRect1.rect.height)
+            {
+                toPlace = timeHolder1;
+            }
+            else if (dragRect.position.y <= timeRect2.position.y + timeRect2.rect.height &&
+                      dragRect.position.y >= timeRect2.position.y - timeRect2.rect.height)
+                toPlace = timeHolder2;
+        }
+        else if (dragRect.position.x <= menuRect.position.x + menuRect.rect.width &&
+                  dragRect.position.x >= menuRect.position.x - menuRect.rect.width &&
+                  dragRect.position.y <= menuRect.position.y + menuRect.rect.height &&
+                  dragRect.position.y >= menuRect.position.y - menuRect.rect.height)
+            toPlace = MenuHolder;
+
+        if(toPlace)
+        {
+            if (toPlace.DragEffectEnd(this))
+            { // 如果到达了拖入区域
+                fromPlace.DragAway();
+            }
+        }
+        else
+        { // 回去
+            dragRect.position = fromPosition;
+            //dragRect.parent = toPlace.transform;
         }
     }
 
