@@ -20,7 +20,9 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
+        Debug.Log("1111");
         offset = eventData.position - new Vector2(rt.position.x, rt.position.y);
+        fromPosition = this.transform.position;
         toPlace.DragEffectBegin(this);
     }
 
@@ -29,12 +31,13 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     }
 
     public void OnEndDrag(PointerEventData eventData) {
-        if (toPlace.DragEffectEnd()) { // 如果到达了拖入区域
+        if (toPlace.DragEffectEnd(this)) { // 如果到达了拖入区域
             fromPlace.DragAway();
-            gameObject.SetActive(false); Destroy(gameObject);
+            //gameObject.SetActive(false); Destroy(gameObject);
         } else { // 回去
             //rt.position = this.GetComponent<CookingStep>().origin;
-            transform.parent = menu.transform;
+            //transform.parent = menu.transform;
+            rt.position = fromPosition;
         }
     }
 

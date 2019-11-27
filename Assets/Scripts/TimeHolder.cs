@@ -2,12 +2,16 @@
 
 public class TimeHolder: Place {
 
+    readonly int unitWidth = 100;
+    readonly int unitHeight = 100;
+
     // 阴影和显示在时间轴的步骤的prefab
     [SerializeField] private GameObject ShadowModel, StepModel;
     // 阴影物体
     private GameObject Shadow;
-    // 阴影、自己、拖动物体的坐标系
+    // 阴影、自己、拖动物体的坐标系、拖动的步骤
     private RectTransform ShadowRect, SelfRect, DragRect;
+    private CookingStep dragStep;
     // 自己的有效区域
     private float minx, maxx, miny, maxy;
 
@@ -42,23 +46,30 @@ public class TimeHolder: Place {
         Shadow = Instantiate<GameObject>(ShadowModel,transform); // 生成阴影
         ShadowRect = Shadow.GetComponent<RectTransform>();
         Shadow.GetComponent<CanvasRenderer>().SetAlpha(0);
+        dragStep = d.GetComponent<CookingStep>();
+        ShadowRect.sizeDelta = new Vector2(unitWidth * dragStep.Time, unitHeight);
     }
 
-    public override bool DragEffectEnd() {
+    public override bool DragEffectEnd(Dragable d) {
         bool flag = false;
         if (DragRect.position.x > minx &&
             DragRect.position.y > miny &&
             DragRect.position.x + DragRect.rect.width < maxx &&
             DragRect.position.y + DragRect.rect.height < maxy) {
             // 生成固定在时间轴上的步骤
-            RectTransform rt = (Instantiate<GameObject>(StepModel)).GetComponent<RectTransform>();
-            rt.position = ShadowRect.position;
-            rt.transform.SetParent(transform.parent);
+            //RectTransform rt = (Instantiate<GameObject>(StepModel)).GetComponent<RectTransform>();
+            //rt.position = ShadowRect.position;
+            //rt.transform.SetParent(transform.parent);
+            DragRect.position = ShadowRect.position;
+            DragRect.sizeDelta = ShadowRect.sizeDelta;
+            DragRect.transform.parent = this.transform;
+            DragRect.SetAsFirstSibling();
             flag = true;
         } 
         Shadow.SetActive(false); Destroy(Shadow);
         Shadow = null; ShadowRect = null;
-        DragRect = null; return flag;
+        //DragRect = null;
+        return flag;
     }
 
     public override void DragAway() {
