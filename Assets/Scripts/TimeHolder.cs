@@ -15,6 +15,7 @@ public class TimeHolder: Place {
     private CanvasRenderer ShadowRender;
     // 自己的有效区域
     private float minx, maxx, miny, maxy;
+    private Transform menuHolder;
 
     void Start() {
         SelfRect = GetComponent<RectTransform>();
@@ -25,6 +26,7 @@ public class TimeHolder: Place {
         maxx = SelfRect.position.x + SelfRect.rect.width;
         miny = SelfRect.position.y - 100;
         maxy = SelfRect.position.y + SelfRect.rect.height + 100;
+        menuHolder = GameObject.FindWithTag("MenuHolder").transform;
     }
 
     // Update is called once per frame
@@ -45,9 +47,6 @@ public class TimeHolder: Place {
 
     public override void DragEffectBegin(Dragable d) {
         DragRect = d.GetComponent<RectTransform>();
-        //Shadow = Instantiate<GameObject>(ShadowModel,transform); // 生成阴影
-        //ShadowRect = Shadow.GetComponent<RectTransform>();
-        //Shadow.GetComponent<CanvasRenderer>().SetAlpha(0);
         dragStep = d.GetComponent<CookingStep>();
         ShadowRect.sizeDelta = new Vector2(unitWidth * dragStep.Time, unitHeight);
     }
@@ -58,14 +57,23 @@ public class TimeHolder: Place {
             DragRect.position.y > miny &&
             DragRect.position.x + DragRect.rect.width < maxx &&
             DragRect.position.y + DragRect.rect.height < maxy) {
-            // 生成固定在时间轴上的步骤
-            //RectTransform rt = (Instantiate<GameObject>(StepModel)).GetComponent<RectTransform>();
-            //rt.position = ShadowRect.position;
-            //rt.transform.SetParent(transform.parent);
             DragRect.position = ShadowRect.position;
             DragRect.sizeDelta = ShadowRect.sizeDelta;
             DragRect.transform.parent = this.transform;
             DragRect.SetAsFirstSibling();
+
+            CookingStep deleteStep = d.GetComponent<CookingStep>();
+            for(int i = 0; i < menuHolder.childCount; i++)
+            {
+                var stepChild = menuHolder.GetChild(i);
+                var step = stepChild.GetComponent<CookingStep>();
+                step.DirectDepend.Remove(deleteStep);
+                if (step.DirectDepend.Count == 0)
+                    step.canDrag = true;
+            }
+
+
+
             flag = true;
         }
         ShadowRender.SetAlpha(0);

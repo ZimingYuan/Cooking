@@ -16,6 +16,8 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     private RectTransform timeRect1;
     private RectTransform timeRect2;
     private RectTransform menuRect;
+    //step
+    private CookingStep cookingStep;
 
     void Start() {
         dragRect = GetComponent<RectTransform>();
@@ -29,18 +31,23 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         menuRect = MenuHolder.GetComponent<RectTransform>();
         timeRect1 = timeHolder1.GetComponent<RectTransform>();
         timeRect2 = timeHolder2.GetComponent<RectTransform>();
+        cookingStep = this.GetComponent<CookingStep>();
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
         offset = eventData.position - new Vector2(dragRect.position.x, dragRect.position.y);
-        fromPosition = this.transform.position;
-        Debug.Log(fromPosition);
-        timeHolder1.DragEffectBegin(this);
-        timeHolder2.DragEffectBegin(this);
+
+        if (cookingStep.canDrag)
+        {
+            fromPosition = this.transform.position;
+            timeHolder1.DragEffectBegin(this);
+            timeHolder2.DragEffectBegin(this);
+        }
     }
 
     public void OnDrag(PointerEventData eventData) {
-        dragRect.position = eventData.position - offset;
+        if (cookingStep.canDrag)
+            dragRect.position = eventData.position - offset;
     }
 
     public void OnEndDrag(PointerEventData eventData) {
@@ -64,16 +71,18 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
         if(toPlace)
         {
-            if (toPlace.DragEffectEnd(this))
-            { // 如果到达了拖入区域
-                fromPlace.DragAway();
-            }
+            toPlace.DragEffectEnd(this);
         }
         else
         { // 回去
             dragRect.position = fromPosition;
             //dragRect.parent = toPlace.transform;
         }
+    }
+
+    public void SetDragSize(Vector2 size)
+    {
+        dragRect.sizeDelta = size;
     }
 
 }
