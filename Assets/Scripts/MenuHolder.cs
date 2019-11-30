@@ -6,18 +6,18 @@ using UnityEngine;
 using LitJson;
 
 public class MenuHolder: Place {
-    CookingStepCollection stepCollection;
     [SerializeField]
     private CookingStep stepPrefab;
     List<CookingStep> steps;
+    GameController gameController;
 
     private Vector2 unitSize = new Vector2(200, 100);
 
     void Start() {
-        //stepCollection = LoadJson.Load("/Jsons/test.json");
-        //Debug.Log(stepCollection.CookingSteps[1].Depend);
+        //gameController.stepCollection = LoadJson.Load("/Jsons/test.json");
+        //Debug.Log(gameController.stepCollection.CookingSteps[1].Depend);
+        gameController = GameController.GetInstance();
         InitializedMenu("/Jsons/test.json");
-        
     }
 
     void Update() {
@@ -31,7 +31,27 @@ public class MenuHolder: Place {
     public override bool DragEffectEnd(Dragable d) {
 
         CookingStep addStep = d.GetComponent<CookingStep>();
-        
+        //foreach(var step in gameController.stepCollection.CookingSteps)
+        //{
+        //    //var tmp = step.sholdDepend.Exists(t => t.ID == addStep.ID);
+        //    if (step.sholdDepend.Exists(t => t.ID == addStep.ID))
+        //    {
+        //        step.DirectDepend.Add(addStep);
+        //        step.transform.parent = this.transform;
+        //    }
+                
+        //}
+
+        foreach(var step in addStep.Control)
+        {
+            if(!step.DirectDepend.Exists(t => t.ID== addStep.ID))
+            {
+                step.DirectDepend.Add(addStep);
+                step.transform.parent = this.transform;
+                step.GetComponent<Dragable>().SetDragSize(unitSize);
+                step.canDrag = false;
+            }
+        }
 
         d.transform.parent = this.transform;
         d.SetDragSize(unitSize);
@@ -47,7 +67,6 @@ public class MenuHolder: Place {
         StreamReader streamreader = new StreamReader(Application.dataPath + filename);
         JsonReader jr = new JsonReader(streamreader);
         JsonData jd = JsonMapper.ToObject(jr);
-        stepCollection = new CookingStepCollection();
         foreach (JsonData i in jd)
         {
             CookingStep cs = new CookingStep((string)i["名字"], (int)i["ID"], (int)i["持续时间"], (bool)i["能否同时"]);
@@ -56,28 +75,27 @@ public class MenuHolder: Place {
             var drag = tmp.GetComponent<Dragable>();
             drag.fromPlace =transform.parent.GetComponent<Place>();
             //drag.toPlace = GameObject.FindWithTag("TimeHolder1").GetComponent<Place>();
-            stepCollection.CookingSteps.Add(tmp);
+            gameController.stepCollection.CookingSteps.Add(tmp);
         }
         for (int i = 0; i < jd.Count; i++)
         {
-            CookingStep cs = stepCollection.CookingSteps[i];
+            CookingStep cs = gameController.stepCollection.CookingSteps[i];
             JsonData depend = jd[i]["前置条件"];
-            foreach (JsonData j in depend) cs.DirectDepend.Add(stepCollection.FindByName((string)j));
+            foreach (JsonData j in depend) cs.DirectDepend.Add(gameController.stepCollection.FindByName((string)j));
             foreach (var dep in cs.DirectDepend)
                 cs.sholdDepend.Add(dep);
             //cs.sholdDepend = Clone<CookingStep>(cs.DirectDepend);
         }
-        stepCollection.CalcDepend();        
+        gameController.stepCollection.CalcDepend();        
 
-        foreach(var step in stepCollection.CookingSteps)
+        foreach(var step in gameController.stepCollection.CookingSteps)
         {
             if (step.DirectDepend.Count > 0)
             {
-                Debug.Log(step.Name);
                 step.canDrag = false;
             }
         }
-
+        Debug.Log(gameController.stepCollection.CookingSteps.Count);
     }
 
 

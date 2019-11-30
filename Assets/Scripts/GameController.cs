@@ -5,11 +5,12 @@ using UnityEngine;
 public class GameController :MonoBehaviour
 {
     //单例
-    private static GameController instance = new GameController();
     
+    public CookingStepCollection stepCollection;
+    private static GameController instance = new GameController();
     private GameController()
     {
-
+        stepCollection = new CookingStepCollection();
     }
     
     public  static GameController GetInstance()
@@ -17,7 +18,7 @@ public class GameController :MonoBehaviour
         return instance;
     }
 
-    public CookingStepCollection stepCollection;
+    
 
 
 }

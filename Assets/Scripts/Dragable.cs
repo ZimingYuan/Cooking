@@ -28,7 +28,7 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         timeHolder1 = GameObject.FindWithTag("TimeHolder1").GetComponent<TimeHolder>();
         timeHolder2 = GameObject.FindWithTag("TimeHolder2").GetComponent<TimeHolder>();
 
-        menuRect = MenuHolder.GetComponent<RectTransform>();
+        menuRect = MenuHolder.transform.parent.GetComponent<RectTransform>();
         timeRect1 = timeHolder1.GetComponent<RectTransform>();
         timeRect2 = timeHolder2.GetComponent<RectTransform>();
         cookingStep = this.GetComponent<CookingStep>();
@@ -36,7 +36,7 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
     public void OnBeginDrag(PointerEventData eventData) {
         offset = eventData.position - new Vector2(dragRect.position.x, dragRect.position.y);
-
+        fromPlace = transform.parent.GetComponent<Place>();
         if (cookingStep.canDrag)
         {
             fromPosition = this.transform.position;
@@ -51,33 +51,43 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     }
 
     public void OnEndDrag(PointerEventData eventData) {
-        toPlace = null;
-        if (dragRect.position.x > timeRect1.position.x)
+        if(cookingStep.canDrag)
         {
-            if (dragRect.position.y >= timeRect1.position.y - timeRect1.rect.height &&
-                dragRect.position.y <= timeRect1.position.y + timeRect1.rect.height)
+            toPlace = null;
+            if (dragRect.position.x > timeRect1.position.x)
             {
-                toPlace = timeHolder1;
+                if (dragRect.position.y >= timeRect1.position.y - timeRect1.rect.height &&
+                    dragRect.position.y <= timeRect1.position.y + timeRect1.rect.height)
+                {
+                    toPlace = timeHolder1;
+                }
+                else if (dragRect.position.y <= timeRect2.position.y + timeRect2.rect.height &&
+                          dragRect.position.y >= timeRect2.position.y - timeRect2.rect.height)
+                    toPlace = timeHolder2;
             }
-            else if (dragRect.position.y <= timeRect2.position.y + timeRect2.rect.height &&
-                      dragRect.position.y >= timeRect2.position.y - timeRect2.rect.height)
-                toPlace = timeHolder2;
+            else if (dragRect.position.x <= menuRect.position.x + menuRect.rect.width &&
+                      dragRect.position.x >= menuRect.position.x - menuRect.rect.width &&
+                      dragRect.position.y <= menuRect.position.y + menuRect.rect.height &&
+                      dragRect.position.y >= menuRect.position.y - menuRect.rect.height)
+                toPlace = MenuHolder;
+            Debug.Log(dragRect.position);
+            Debug.Log(menuRect.position);
+            Debug.Log(menuRect.rect);
+            if (toPlace)
+            {
+                Debug.Log(toPlace);
+                toPlace.DragEffectEnd(this);
+                if (fromPlace == toPlace && fromPlace == MenuHolder)
+                    dragRect.position = fromPosition;
+            }
+            else
+            { // 回去
+                dragRect.position = fromPosition;
+                //dragRect.parent = toPlace.transform;
+            }
         }
-        else if (dragRect.position.x <= menuRect.position.x + menuRect.rect.width &&
-                  dragRect.position.x >= menuRect.position.x - menuRect.rect.width &&
-                  dragRect.position.y <= menuRect.position.y + menuRect.rect.height &&
-                  dragRect.position.y >= menuRect.position.y - menuRect.rect.height)
-            toPlace = MenuHolder;
-
-        if(toPlace)
-        {
-            toPlace.DragEffectEnd(this);
-        }
-        else
-        { // 回去
-            dragRect.position = fromPosition;
-            //dragRect.parent = toPlace.transform;
-        }
+       
+        
     }
 
     public void SetDragSize(Vector2 size)

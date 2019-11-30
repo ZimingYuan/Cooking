@@ -4,7 +4,7 @@ public class TimeHolder: Place {
 
     readonly int unitWidth = 100;
     readonly int unitHeight = 100;
-
+    readonly int minScale = 50;
     // 阴影和显示在时间轴的步骤的prefab
     [SerializeField] private GameObject ShadowModel, StepModel;
     // 阴影物体
@@ -16,6 +16,7 @@ public class TimeHolder: Place {
     // 自己的有效区域
     private float minx, maxx, miny, maxy;
     private Transform menuHolder;
+    GameController gameController;
 
     void Start() {
         SelfRect = GetComponent<RectTransform>();
@@ -27,6 +28,7 @@ public class TimeHolder: Place {
         miny = SelfRect.position.y - 100;
         maxy = SelfRect.position.y + SelfRect.rect.height + 100;
         menuHolder = GameObject.FindWithTag("MenuHolder").transform;
+        gameController = GameController.GetInstance();
     }
 
     // Update is called once per frame
@@ -35,13 +37,17 @@ public class TimeHolder: Place {
             if (DragRect.position.x > minx &&
                 DragRect.position.y > miny &&
                 DragRect.position.x + DragRect.rect.width < maxx &&
-                DragRect.position.y + DragRect.rect.height < maxy) { // 在区域内
+                DragRect.position.y + DragRect.rect.height < maxy)
+            { // 在区域内
+                
                 Vector2 position = new Vector2(DragRect.position.x, SelfRect.position.y);
                 ShadowRect.position = position; // 让阴影对准拖动物体
                 if (ShadowRender.GetAlpha() < 0.5) {
                     ShadowRender.SetAlpha(1); // 让阴影显示出来
                 }
-            } else if (ShadowRender.GetAlpha() > 0.5) ShadowRender.SetAlpha(0); // 让阴影隐藏
+            }
+            else if (ShadowRender.GetAlpha() > 0.5)
+                ShadowRender.SetAlpha(0); // 让阴影隐藏
         }
     }
 
@@ -53,11 +59,13 @@ public class TimeHolder: Place {
 
     public override bool DragEffectEnd(Dragable d) {
         bool flag = false;
-        if (DragRect.position.x > minx &&
-            DragRect.position.y > miny &&
-            DragRect.position.x + DragRect.rect.width < maxx &&
-            DragRect.position.y + DragRect.rect.height < maxy) {
-            DragRect.position = ShadowRect.position;
+        //if (DragRect.position.x > minx &&
+        //    DragRect.position.y > miny &&
+        //    DragRect.position.x + DragRect.rect.width < maxx &&
+        //    DragRect.position.y + DragRect.rect.height < maxy) {
+        //DragRect.position = ShadowRect.position;
+            //向左对齐
+            DragRect.position = new Vector2(((int)(ShadowRect.position.x) / minScale) * minScale, ShadowRect.position.y);
             DragRect.sizeDelta = ShadowRect.sizeDelta;
             DragRect.transform.parent = this.transform;
             DragRect.SetAsFirstSibling();
@@ -71,11 +79,8 @@ public class TimeHolder: Place {
                 if (step.DirectDepend.Count == 0)
                     step.canDrag = true;
             }
-
-
-
             flag = true;
-        }
+        //}
         ShadowRender.SetAlpha(0);
         ShadowRect.SetAsFirstSibling();
         //Destroy(Shadow);
