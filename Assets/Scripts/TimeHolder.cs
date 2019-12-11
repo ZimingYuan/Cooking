@@ -64,29 +64,38 @@ public class TimeHolder: Place {
         //    DragRect.position.x + DragRect.rect.width < maxx &&
         //    DragRect.position.y + DragRect.rect.height < maxy) {
         //DragRect.position = ShadowRect.position;
-            //向左对齐
+        //向左对齐
+        if (ShadowRect.position.x < d.GetComponent<CookingStep>().LastRight)
+        {
+            DragRect.position = d.fromPosition;
+        }
+        else
+        {
             DragRect.position = new Vector2(((int)(ShadowRect.position.x) / minScale) * minScale, ShadowRect.position.y);
             DragRect.sizeDelta = ShadowRect.sizeDelta;
             DragRect.transform.parent = this.transform;
             DragRect.SetAsFirstSibling();
 
             CookingStep deleteStep = d.GetComponent<CookingStep>();
-            for(int i = 0; i < menuHolder.childCount; i++)
+            for (int i = 0; i < menuHolder.childCount; i++)
             {
                 var stepChild = menuHolder.GetChild(i);
                 var step = stepChild.GetComponent<CookingStep>();
+                step.LastRight = Mathf.Max(step.LastRight, DragRect.position.x);
                 step.DirectDepend.Remove(deleteStep);
                 if (step.DirectDepend.Count == 0)
                     step.canDrag = true;
             }
             flag = true;
-        //}
-        ShadowRender.SetAlpha(0);
-        ShadowRect.SetAsFirstSibling();
-        //Destroy(Shadow);
-        //Shadow = null; ShadowRect = null;
-        //DragRect = null;
-        return flag;
+            //}
+            ShadowRender.SetAlpha(0);
+            ShadowRect.SetAsFirstSibling();
+        }
+            //Destroy(Shadow);
+            //Shadow = null; ShadowRect = null;
+            //DragRect = null;
+            return flag;
+        
     }
 
     public override void DragAway() {

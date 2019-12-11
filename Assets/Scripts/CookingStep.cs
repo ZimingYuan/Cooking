@@ -8,6 +8,7 @@ public class CookingStep: MonoBehaviour{
     public bool CanParallel; // 能否同时
     public bool canDrag = true;
     public int ID;
+    public float LastRight; //记录前依赖点的最右
     public List<CookingStep> DirectDepend; // 直接依赖的步骤
     public List<CookingStep> Depend; // 直接或间接依赖的步骤
     public List<CookingStep> Control; // 直接或间接依赖本步骤的步骤

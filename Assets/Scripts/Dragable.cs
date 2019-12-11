@@ -6,13 +6,13 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     // fromPlace: 从哪个容器拖出来，toPlace: 拖到哪个容器
     [SerializeField] public Place fromPlace, toPlace;
     // fromPosition: 拖之前的坐标，offset: 鼠标拖动前点击位置和物体原点位移
-    private Vector2 fromPosition, offset;
+    [SerializeField] public Vector2 fromPosition, offset;
     //Holder
     private TimeHolder timeHolder1;
     private TimeHolder timeHolder2;
     private MenuHolder MenuHolder;
     //RectTransfrom
-    private RectTransform dragRect;
+    [SerializeField]public RectTransform dragRect;
     private RectTransform timeRect1;
     private RectTransform timeRect2;
     private RectTransform menuRect;
@@ -33,6 +33,7 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         timeRect2 = timeHolder2.GetComponent<RectTransform>();
         cookingStep = this.GetComponent<CookingStep>();
     }
+    
 
     public void OnBeginDrag(PointerEventData eventData) {
         offset = eventData.position - new Vector2(dragRect.position.x, dragRect.position.y);

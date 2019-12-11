@@ -528,12 +528,12 @@ PrefabInstance:
     - target: {fileID: 7503172508113502718, guid: d1754b5d97054db47a6abe3993f21c8e,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 516
+      value: 616
       objectReference: {fileID: 0}
     - target: {fileID: 7503172508113502718, guid: d1754b5d97054db47a6abe3993f21c8e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -179
+      value: -157
       objectReference: {fileID: 0}
     - target: {fileID: 7503172508113502718, guid: d1754b5d97054db47a6abe3993f21c8e,
         type: 3}
@@ -855,6 +855,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fromPlace: {fileID: 220463731}
   toPlace: {fileID: 542709526}
+  fromPosition: {x: 0, y: 0}
+  offset: {x: 0, y: 0}
+  dragRect: {fileID: 0}
 --- !u!1 &1687880356
 GameObject:
   m_ObjectHideFlags: 0
@@ -1194,12 +1197,12 @@ PrefabInstance:
     - target: {fileID: 7503172508113502718, guid: d1754b5d97054db47a6abe3993f21c8e,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 516
+      value: 603
       objectReference: {fileID: 0}
     - target: {fileID: 7503172508113502718, guid: d1754b5d97054db47a6abe3993f21c8e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -179
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 7503172508113502718, guid: d1754b5d97054db47a6abe3993f21c8e,
         type: 3}
@@ -1279,7 +1282,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 333.105, y: -200}
+  m_AnchoredPosition: {x: 333.105, y: -197}
   m_SizeDelta: {x: 619.19, y: 100}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1895608776
