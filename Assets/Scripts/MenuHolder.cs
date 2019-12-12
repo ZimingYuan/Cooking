@@ -6,8 +6,8 @@ using UnityEngine;
 using LitJson;
 
 public class MenuHolder: Place {
-    [SerializeField]
-    private CookingStep stepPrefab;
+
+    [SerializeField] private CookingStep stepPrefab;
     List<CookingStep> steps;
     GameController gameController;
 
@@ -28,34 +28,24 @@ public class MenuHolder: Place {
 
     }
 
-    public override bool DragEffectEnd(Dragable d) {
+    public override void DragEffectEnd(Dragable d) {
 
-        CookingStep addStep = d.GetComponent<CookingStep>();
-        //foreach(var step in gameController.stepCollection.CookingSteps)
-        //{
-        //    //var tmp = step.sholdDepend.Exists(t => t.ID == addStep.ID);
-        //    if (step.sholdDepend.Exists(t => t.ID == addStep.ID))
-        //    {
-        //        step.DirectDepend.Add(addStep);
-        //        step.transform.parent = this.transform;
-        //    }
-                
-        //}
-
-        foreach(var step in addStep.Control)
+        CookingStep addStep = d.GetComponent<CookingStep>(); // 被拖的步骤
+        foreach(var step in addStep.Control) // 依赖addStep且在时间条上的自动弹回菜单栏
         {
-            if(!step.DirectDepend.Exists(t => t.ID== addStep.ID))
+            if(!step.DependNotSatisfied.Exists(t => t.ID== addStep.ID))
             {
-                step.DirectDepend.Add(addStep);
+                step.DependNotSatisfied.Add(addStep);
                 step.transform.parent = this.transform;
                 step.GetComponent<Dragable>().SetDragSize(unitSize);
                 step.canDrag = false;
+                step.Belong = null;
             }
         }
 
         d.transform.parent = this.transform;
+        d.GetComponent<CookingStep>().Belong = null;
         d.SetDragSize(unitSize);
-        return false;
     }
 
     public override void DragAway() {
@@ -82,15 +72,17 @@ public class MenuHolder: Place {
             CookingStep cs = gameController.stepCollection.CookingSteps[i];
             JsonData depend = jd[i]["前置条件"];
             foreach (JsonData j in depend) cs.DirectDepend.Add(gameController.stepCollection.FindByName((string)j));
-            foreach (var dep in cs.DirectDepend)
-                cs.sholdDepend.Add(dep);
-            //cs.sholdDepend = Clone<CookingStep>(cs.DirectDepend);
         }
         gameController.stepCollection.CalcDepend();        
+        gameController.stepCollection.CookingSteps.ForEach((x) =>
+            x.Depend.ForEach((y) =>
+                x.DependNotSatisfied.Add(y)
+            )
+        );
 
         foreach(var step in gameController.stepCollection.CookingSteps)
         {
-            if (step.DirectDepend.Count > 0)
+            if (step.DependNotSatisfied.Count > 0)
             {
                 step.canDrag = false;
             }

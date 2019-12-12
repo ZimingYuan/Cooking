@@ -6,7 +6,7 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     // fromPlace: 从哪个容器拖出来，toPlace: 拖到哪个容器
     [SerializeField] public Place fromPlace, toPlace;
     // fromPosition: 拖之前的坐标，offset: 鼠标拖动前点击位置和物体原点位移
-    [SerializeField] public Vector2 fromPosition, offset;
+    [SerializeField] public Vector2 offset;
     //Holder
     private TimeHolder timeHolder1;
     private TimeHolder timeHolder2;
@@ -21,7 +21,6 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
     void Start() {
         dragRect = GetComponent<RectTransform>();
-        fromPosition = dragRect.position;
         transform.SetSiblingIndex(1); // 把这个物体放在最上，防止按不到
 
         MenuHolder = GameObject.FindWithTag("MenuHolder").GetComponent<MenuHolder>();
@@ -40,7 +39,6 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         fromPlace = transform.parent.GetComponent<Place>();
         if (cookingStep.canDrag)
         {
-            fromPosition = this.transform.position;
             timeHolder1.DragEffectBegin(this);
             timeHolder2.DragEffectBegin(this);
         }
@@ -52,6 +50,25 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     }
 
     public void OnEndDrag(PointerEventData eventData) {
+        if (cookingStep.canDrag) {
+            if (cookingStep.Belong) {
+                if (timeHolder1.ShadowRender.GetAlpha() < 0.5 && timeHolder2.ShadowRender.GetAlpha() < 0.5) {
+                    MenuHolder.DragEffectEnd(this);
+                } else if (cookingStep.Belong.ShadowRender.GetAlpha() < 0.5) {
+                    (cookingStep.Belong == timeHolder1 ? timeHolder2 : timeHolder1).DragEffectEnd(this);
+                } else {
+                    cookingStep.Belong.DragEffectEnd(this);
+                }
+            } else {
+                if (timeHolder1.ShadowRender.GetAlpha() > 0.5) timeHolder1.DragEffectEnd(this);
+                else if (timeHolder2.ShadowRender.GetAlpha() > 0.5) timeHolder2.DragEffectEnd(this);
+                else {
+                    transform.SetParent(null);
+                    transform.SetParent(MenuHolder.transform);
+                }
+            }
+        }
+        /*
         if(cookingStep.canDrag)
         {
             toPlace = null;
@@ -87,7 +104,7 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
                 //dragRect.parent = toPlace.transform;
             }
         }
-       
+        */
         
     }
 

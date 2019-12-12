@@ -1,4 +1,5 @@
-﻿using LitJson;
+﻿// 弃用
+using LitJson;
 using System.IO;
 using UnityEngine;
 

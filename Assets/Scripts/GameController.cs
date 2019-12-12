@@ -18,7 +18,4 @@ public class GameController :MonoBehaviour
         return instance;
     }
 
-    
-
-
 }

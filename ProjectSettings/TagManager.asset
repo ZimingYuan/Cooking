@@ -8,6 +8,7 @@ TagManager:
   - TimeHolder
   - TimeHolder1
   - TimeHolder2
+  - StepInTimeHolder
   layers:
   - Default
   - TransparentFX
