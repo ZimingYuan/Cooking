@@ -14,14 +14,16 @@ public class CookingStep: MonoBehaviour{
     public List<CookingStep> Control; // 直接或间接依赖本步骤的步骤,在游戏开始后不要修改
     public List<CookingStep> DependNotSatisfied; // 实际游戏中该步骤未满足的依赖
     public TimeHolder Belong;
+    public string spritePath;
 
-    public CookingStep(string name, int _ID, int time, bool cp) {
+    public CookingStep(string name, int _ID, int time, bool cp,string path) {
         Name = name; Time = time; CanParallel = cp;ID = _ID;
         canDrag = true;
         DirectDepend = new List<CookingStep>();
         Depend = new List<CookingStep>();
         Control = new List<CookingStep>();
         DependNotSatisfied = new List<CookingStep>();
+        spritePath = path;
     }
 
     public void Copy(CookingStep old)
@@ -35,5 +37,6 @@ public class CookingStep: MonoBehaviour{
         Depend = old.Depend;
         Control = old.Control;
         DependNotSatisfied = old.DependNotSatisfied;
+        spritePath = old.spritePath;
     }
 }

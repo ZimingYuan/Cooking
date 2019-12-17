@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 using LitJson;
 
 public class MenuHolder: Place {
@@ -14,10 +15,13 @@ public class MenuHolder: Place {
     private Vector2 unitSize = new Vector2(200, 100);
 
     void Start() {
-        //gameController.stepCollection = LoadJson.Load("/Jsons/test.json");
-        //Debug.Log(gameController.stepCollection.CookingSteps[1].Depend);
         gameController = GameController.GetInstance();
         InitializedMenu("/Jsons/test.json");
+
+        //Texture2D sprite= Resources.Load("SteamEgg") as Texture2D;
+        //GameObject game = Resources.Load("app") as GameObject;
+        //Debug.Log(game);
+        //Debug.Log(sprite);
     }
 
     void Update() {
@@ -59,7 +63,7 @@ public class MenuHolder: Place {
         JsonData jd = JsonMapper.ToObject(jr);
         foreach (JsonData i in jd)
         {
-            CookingStep cs = new CookingStep((string)i["名字"], (int)i["ID"], (int)i["持续时间"], (bool)i["能否同时"]);
+            CookingStep cs = new CookingStep((string)i["名字"], (int)i["ID"], (int)i["持续时间"], (bool)i["能否同时"],(string)i["图片"]);
             CookingStep tmp = Instantiate(stepPrefab, this.transform);
             tmp.Copy(cs);
             var drag = tmp.GetComponent<Dragable>();
@@ -70,6 +74,12 @@ public class MenuHolder: Place {
         for (int i = 0; i < jd.Count; i++)
         {
             CookingStep cs = gameController.stepCollection.CookingSteps[i];
+            string path = "Images/" + cs.spritePath;
+            Debug.Log(path);
+            Texture2D tex = Resources.Load(path) as Texture2D;
+            Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+            Debug.Log(sprite);
+            cs.GetComponent<Image>().sprite = sprite;
             JsonData depend = jd[i]["前置条件"];
             foreach (JsonData j in depend) cs.DirectDepend.Add(gameController.stepCollection.FindByName((string)j));
         }
