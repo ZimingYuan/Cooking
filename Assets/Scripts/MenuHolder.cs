@@ -40,14 +40,14 @@ public class MenuHolder: Place {
             if(!step.DependNotSatisfied.Exists(t => t.ID== addStep.ID))
             {
                 step.DependNotSatisfied.Add(addStep);
-                step.transform.parent = this.transform;
+                step.transform.parent = transform;
                 step.GetComponent<Dragable>().SetDragSize(unitSize);
                 step.canDrag = false;
                 step.Belong = null;
             }
         }
 
-        d.transform.parent = this.transform;
+        d.transform.parent = transform;
         d.GetComponent<CookingStep>().Belong = null;
         d.SetDragSize(unitSize);
     }
@@ -75,11 +75,9 @@ public class MenuHolder: Place {
         {
             CookingStep cs = gameController.stepCollection.CookingSteps[i];
             string path = "Images/" + cs.spritePath;
-            Debug.Log(path);
-            Texture2D tex = Resources.Load(path) as Texture2D;
-            Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
-            Debug.Log(sprite);
-            cs.GetComponent<Image>().sprite = sprite;
+            Sprite sprite = Resources.Load<Sprite>(path);
+            Image t = cs.GetComponentsInChildren<Image>()[1];
+            t.sprite = sprite; t.preserveAspect = true;
             JsonData depend = jd[i]["前置条件"];
             foreach (JsonData j in depend) cs.DirectDepend.Add(gameController.stepCollection.FindByName((string)j));
         }

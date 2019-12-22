@@ -42,7 +42,7 @@ public class TimeHolder: Place {
     void Update() {
         if (DragRect) {
             SelfRectRect = new Rect(SelfRect.position.x, SelfRect.position.y - 100,
-                SelfRect.rect.width - ShadowRect.sizeDelta.x + DragRect.sizeDelta.x, SelfRect.rect.height + 200);
+                SelfRect.sizeDelta.x + DragRect.sizeDelta.x, SelfRect.sizeDelta.y + 200);
             if (SelfRectRect.Contains(DragRect.position)
                 && SelfRectRect.Contains(new Vector2(DragRect.position.x, DragRect.position.y) + DragRect.sizeDelta)) { // 在区域内
                 Vector2 position = new Vector2((int)(DragRect.position.x) / minScale * minScale, SelfRect.position.y);
@@ -51,13 +51,10 @@ public class TimeHolder: Place {
                     new List<GameObject>(GameObject.FindGameObjectsWithTag("StepInTimeHolder"))
                     .Select(x => x.GetComponent<RectTransform>())
                     .Where(x => x.GetComponent<CookingStep>().Belong == this)
-                    .Select(x => new Rect(x.position.x, 0, x.sizeDelta.x, 1))
+                    .Select(x => new Rect(x.anchoredPosition.x, 0, x.sizeDelta.x, 1))
                     .ToList();
-                Debug.Log(SelfRect.position.x);
-                if (HoldSteps.Count > 0)Debug.Log(HoldSteps[0]);
-                Rect ShadowRectRect = new Rect(ShadowRect.position.x, 0, ShadowRect.sizeDelta.x, 1);
-                Debug.Log(ShadowRectRect);
-                if (!HoldSteps.Exists((x) => x.Overlaps(ShadowRectRect))) ShowShadow();
+                Rect ShadowRectRect = new Rect(ShadowRect.anchoredPosition.x, 0, ShadowRect.sizeDelta.x, 1);
+                if (!HoldSteps.Exists((x) => x.Overlaps(ShadowRectRect)) && ShadowRectRect.min.x > 0 && ShadowRectRect.max.x < SelfRect.sizeDelta.x) ShowShadow();
                 else HideShadow();
             } else HideShadow();
         }

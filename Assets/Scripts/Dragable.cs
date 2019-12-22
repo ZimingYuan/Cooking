@@ -37,6 +37,7 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     public void OnBeginDrag(PointerEventData eventData) {
         offset = eventData.position - new Vector2(dragRect.position.x, dragRect.position.y);
         fromPlace = transform.parent.GetComponent<Place>();
+        transform.parent = MenuHolder.transform;
         if (cookingStep.canDrag)
         {
             timeHolder1.DragEffectBegin(this);
