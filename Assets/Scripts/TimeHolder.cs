@@ -2,20 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TimeHolder: Place {
 
-    readonly int unitWidth = 100;
-    readonly int unitHeight = 100;
-    readonly int minScale = 50;
+    private float minScale = 50;
     // 阴影和显示在时间轴的步骤的prefab
-    [SerializeField] private GameObject ShadowModel, StepModel;
-    // 阴影物体
-    private GameObject Shadow;
+    [SerializeField] private GameObject ShadowModel;
     // 阴影、自己、拖动物体的坐标系、拖动的步骤
     private RectTransform ShadowRect, SelfRect, DragRect;
     private CookingStep dragStep;
-    public CanvasRenderer ShadowRender;
+    [HideInInspector] public CanvasRenderer ShadowRender;
     private Transform menuHolder;
     GameController gameController;
 
@@ -23,12 +20,12 @@ public class TimeHolder: Place {
     private Rect SelfRectRect;
 
     void Start() {
-        SelfRect = GetComponent<RectTransform>();
-        Shadow = this.transform.GetChild(0).gameObject;
-        ShadowRect = this.transform.GetChild(0).GetComponent<RectTransform>();
-        ShadowRender = Shadow.GetComponent<CanvasRenderer>();
+        SelfRect = GetComponentsInChildren<RectTransform>().Where(x => x.name == "GridContent").First();
+        ShadowRect = GetComponentsInChildren<RectTransform>().Where(x => x.name == "ShadowModel").First();
+        ShadowRender = GetComponentsInChildren<CanvasRenderer>().Where(x => x.name == "ShadowModel").First();
         menuHolder = GameObject.FindWithTag("MenuHolder").transform;
         gameController = GameController.GetInstance();
+        minScale = SelfRect.sizeDelta.x / 30;
     }
 
     private void ShowShadow() {
@@ -43,18 +40,19 @@ public class TimeHolder: Place {
         if (DragRect) {
             SelfRectRect = new Rect(SelfRect.position.x, SelfRect.position.y - 100,
                 SelfRect.sizeDelta.x + DragRect.sizeDelta.x, SelfRect.sizeDelta.y + 200);
+            // 边界矩形
             if (SelfRectRect.Contains(DragRect.position)
                 && SelfRectRect.Contains(new Vector2(DragRect.position.x, DragRect.position.y) + DragRect.sizeDelta)) { // 在区域内
-                Vector2 position = new Vector2((int)(DragRect.position.x) / minScale * minScale, SelfRect.position.y);
-                ShadowRect.position = position; // 让阴影对准拖动物体
+                float relativex = (int)((DragRect.position.x - SelfRect.position.x) / minScale) * minScale;
+                ShadowRect.anchoredPosition = new Vector2(relativex, 0); // 阴影和物体及格子对齐
                 List<Rect> HoldSteps =
-                    new List<GameObject>(GameObject.FindGameObjectsWithTag("StepInTimeHolder"))
-                    .Select(x => x.GetComponent<RectTransform>())
-                    .Where(x => x.GetComponent<CookingStep>().Belong == this)
-                    .Select(x => new Rect(x.anchoredPosition.x, 0, x.sizeDelta.x, 1))
+                    new List<RectTransform>(GetComponentsInChildren<RectTransform>())
+                    .Where(x => x.name.StartsWith("StepModel"))
+                    .Select(x => new Rect(x.anchoredPosition.x, 0, x.sizeDelta.x - 0.01f, 1))
                     .ToList();
                 Rect ShadowRectRect = new Rect(ShadowRect.anchoredPosition.x, 0, ShadowRect.sizeDelta.x, 1);
-                if (!HoldSteps.Exists((x) => x.Overlaps(ShadowRectRect)) && ShadowRectRect.min.x > 0 && ShadowRectRect.max.x < SelfRect.sizeDelta.x) ShowShadow();
+                if (!HoldSteps.Exists((x) => x.Overlaps(ShadowRectRect)) && ShadowRectRect.min.x >= 0 && ShadowRectRect.max.x <= SelfRect.sizeDelta.x)
+                    ShowShadow(); // 阴影没有和别的步骤交错且没有出边界
                 else HideShadow();
             } else HideShadow();
         }
@@ -63,32 +61,31 @@ public class TimeHolder: Place {
     public override void DragEffectBegin(Dragable d) {
         DragRect = d.GetComponent<RectTransform>();
         dragStep = d.GetComponent<CookingStep>();
-        ShadowRect.sizeDelta = new Vector2(unitWidth * dragStep.Time, unitHeight);
+        ShadowRect.sizeDelta = new Vector2(minScale * dragStep.Time - minScale * 7 / 60, SelfRect.sizeDelta.y);
     }
 
-    public override void DragEffectEnd(Dragable d) {
+    public override void DragEffectEndIn() {
         DragRect.position = ShadowRect.position;
         DragRect.sizeDelta = ShadowRect.sizeDelta;
-        DragRect.transform.parent = this.transform;
+        DragRect.transform.SetParent(SelfRect.transform);
         DragRect.SetAsFirstSibling();
 
-        CookingStep deleteStep = d.GetComponent<CookingStep>();
-        for (int i = 0; i < menuHolder.childCount; i++)
+        CookingStep deleteStep = DragRect.GetComponent<CookingStep>();
+        for (int i = 0; i < menuHolder.childCount; i++) //被依赖的步骤可以拖了
         {
             var stepChild = menuHolder.GetChild(i);
             var step = stepChild.GetComponent<CookingStep>();
-            //step.LastRight = Mathf.Max(step.LastRight, DragRect.position.x);
             if (step.DependNotSatisfied.Contains(deleteStep))
                 step.DependNotSatisfied.Remove(deleteStep);
             if (step.DependNotSatisfied.Count == 0)
                 step.canDrag = true;
         }
-
         dragStep.Belong = this; dragStep = null;  DragRect = null;
         HideShadow(); ShadowRect.SetAsFirstSibling();
+        gameController.stepCollection.CheckDepend();
     }
 
-    public override void DragAway() {
-
+    public override void DragEffectEndOut() {
+        dragStep = null;  DragRect = null;
     }
 }

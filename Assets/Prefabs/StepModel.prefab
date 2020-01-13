@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7124294208538448832}
   m_Layer: 5
   m_Name: StepModel
-  m_TagString: StepInTimeHolder
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -112,8 +112,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91e4c08525ea17549b0b5589d64e2503, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fromPlace: {fileID: 0}
-  toPlace: {fileID: 0}
   offset: {x: 0, y: 0}
   dragRect: {fileID: 0}
 --- !u!1 &1756512926124763694

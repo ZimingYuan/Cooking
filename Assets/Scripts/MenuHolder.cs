@@ -11,17 +11,13 @@ public class MenuHolder: Place {
     [SerializeField] private CookingStep stepPrefab;
     List<CookingStep> steps;
     GameController gameController;
+    private Dragable drag;
 
-    private Vector2 unitSize = new Vector2(200, 100);
+    private Vector2 unitSize = new Vector2(200, 100); // 在菜单栏里的步骤的大小
 
     void Start() {
         gameController = GameController.GetInstance();
         InitializedMenu("/Jsons/test.json");
-
-        //Texture2D sprite= Resources.Load("SteamEgg") as Texture2D;
-        //GameObject game = Resources.Load("app") as GameObject;
-        //Debug.Log(game);
-        //Debug.Log(sprite);
     }
 
     void Update() {
@@ -29,31 +25,32 @@ public class MenuHolder: Place {
     }
 
     public override void DragEffectBegin(Dragable d) {
-
+        drag = d;
     }
 
-    public override void DragEffectEnd(Dragable d) {
+    public override void DragEffectEndIn() {
 
-        CookingStep addStep = d.GetComponent<CookingStep>(); // 被拖的步骤
+        CookingStep addStep = drag.GetComponent<CookingStep>(); // 被拖的步骤
         foreach(var step in addStep.Control) // 依赖addStep且在时间条上的自动弹回菜单栏
         {
-            if(!step.DependNotSatisfied.Exists(t => t.ID== addStep.ID))
+            if(!step.DependNotSatisfied.Exists(t => t.name == addStep.name))
             {
                 step.DependNotSatisfied.Add(addStep);
-                step.transform.parent = transform;
+                step.transform.SetParent(transform);
                 step.GetComponent<Dragable>().SetDragSize(unitSize);
                 step.canDrag = false;
                 step.Belong = null;
             }
         }
-
-        d.transform.parent = transform;
-        d.GetComponent<CookingStep>().Belong = null;
-        d.SetDragSize(unitSize);
+        drag.transform.SetParent(transform);
+        drag.GetComponent<CookingStep>().Belong = null;
+        drag.SetDragSize(unitSize);
+        drag = null;
+        gameController.stepCollection.CheckDepend();
     }
 
-    public override void DragAway() {
-
+    public override void DragEffectEndOut() {
+        drag = null;
     }
 
     private void InitializedMenu(string filename)
@@ -63,12 +60,10 @@ public class MenuHolder: Place {
         JsonData jd = JsonMapper.ToObject(jr);
         foreach (JsonData i in jd)
         {
-            CookingStep cs = new CookingStep((string)i["名字"], (int)i["ID"], (int)i["持续时间"], (bool)i["能否同时"],(string)i["图片"]);
-            CookingStep tmp = Instantiate(stepPrefab, this.transform);
+            CookingStep cs = new CookingStep((string)i["名字"], (int)i["持续时间"], (bool)i["能否同时"],(string)i["图片"]);
+            CookingStep tmp = Instantiate(stepPrefab, transform);
             tmp.Copy(cs);
             var drag = tmp.GetComponent<Dragable>();
-            drag.fromPlace =transform.parent.GetComponent<Place>();
-            //drag.toPlace = GameObject.FindWithTag("TimeHolder1").GetComponent<Place>();
             gameController.stepCollection.CookingSteps.Add(tmp);
         }
         for (int i = 0; i < jd.Count; i++)
@@ -95,7 +90,6 @@ public class MenuHolder: Place {
                 step.canDrag = false;
             }
         }
-        Debug.Log(gameController.stepCollection.CookingSteps.Count);
     }
 
 

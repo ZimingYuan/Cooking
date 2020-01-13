@@ -16,8 +16,8 @@ public class CookingStep: MonoBehaviour{
     public TimeHolder Belong;
     public string spritePath;
 
-    public CookingStep(string name, int _ID, int time, bool cp,string path) {
-        Name = name; Time = time; CanParallel = cp;ID = _ID;
+    public CookingStep(string name, int time, bool cp,string path) {
+        Name = name; Time = time; CanParallel = cp;
         canDrag = true;
         DirectDepend = new List<CookingStep>();
         Depend = new List<CookingStep>();
@@ -32,11 +32,11 @@ public class CookingStep: MonoBehaviour{
         Time = old.Time;
         CanParallel = old.CanParallel;
         canDrag = old.canDrag;
-        ID = old.ID;
         DirectDepend = old.DirectDepend;
         Depend = old.Depend;
         Control = old.Control;
         DependNotSatisfied = old.DependNotSatisfied;
         spritePath = old.spritePath;
     }
+
 }

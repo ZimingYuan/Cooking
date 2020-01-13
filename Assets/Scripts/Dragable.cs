@@ -3,9 +3,7 @@ using UnityEngine.EventSystems;
 
 public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
 
-    // fromPlace: 从哪个容器拖出来，toPlace: 拖到哪个容器
-    [SerializeField] public Place fromPlace, toPlace;
-    // fromPosition: 拖之前的坐标，offset: 鼠标拖动前点击位置和物体原点位移
+    // offset: 鼠标拖动前点击位置和物体原点位移
     [SerializeField] public Vector2 offset;
     //Holder
     private TimeHolder timeHolder1;
@@ -36,10 +34,10 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
     public void OnBeginDrag(PointerEventData eventData) {
         offset = eventData.position - new Vector2(dragRect.position.x, dragRect.position.y);
-        fromPlace = transform.parent.GetComponent<Place>();
-        transform.parent = MenuHolder.transform.parent.parent;
         if (cookingStep.canDrag)
         {
+            transform.SetParent(MenuHolder.transform.parent.parent);
+            MenuHolder.DragEffectBegin(this);
             timeHolder1.DragEffectBegin(this);
             timeHolder2.DragEffectBegin(this);
         }
@@ -52,61 +50,39 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
     public void OnEndDrag(PointerEventData eventData) {
         if (cookingStep.canDrag) {
-            if (cookingStep.Belong) {
+            if (cookingStep.Belong) { // 从时间条往外拖
                 if (timeHolder1.ShadowRender.GetAlpha() < 0.5 && timeHolder2.ShadowRender.GetAlpha() < 0.5) {
-                    MenuHolder.DragEffectEnd(this);
+                    // 步骤没有进入任何一个时间条，需要往菜单栏走
+                    MenuHolder.DragEffectEndIn();
+                    timeHolder1.DragEffectEndOut();
+                    timeHolder2.DragEffectEndOut();
                 } else if (cookingStep.Belong.ShadowRender.GetAlpha() < 0.5) {
-                    (cookingStep.Belong == timeHolder1 ? timeHolder2 : timeHolder1).DragEffectEnd(this);
+                    // 步骤还在原来的时间条区域内
+                    MenuHolder.DragEffectEndOut();
+                    cookingStep.Belong.DragEffectEndOut();
+                    (cookingStep.Belong == timeHolder1 ? timeHolder2 : timeHolder1).DragEffectEndIn();
                 } else {
-                    cookingStep.Belong.DragEffectEnd(this);
+                    // 步骤去了另一个时间条的区域
+                    MenuHolder.DragEffectEndOut();
+                    cookingStep.Belong.DragEffectEndIn();
+                    (cookingStep.Belong == timeHolder1 ? timeHolder2 : timeHolder1).DragEffectEndOut();
                 }
-            } else {
-                if (timeHolder1.ShadowRender.GetAlpha() > 0.5) timeHolder1.DragEffectEnd(this);
-                else if (timeHolder2.ShadowRender.GetAlpha() > 0.5) timeHolder2.DragEffectEnd(this);
-                else {
-                    transform.SetParent(null);
-                    transform.SetParent(MenuHolder.transform);
+            } else { // 从菜单栏往外拖
+                if (timeHolder1.ShadowRender.GetAlpha() > 0.5) { // 进入时间条1
+                    MenuHolder.DragEffectEndOut();
+                    timeHolder1.DragEffectEndIn();
+                    timeHolder2.DragEffectEndOut();
+                } else if (timeHolder2.ShadowRender.GetAlpha() > 0.5) { // 进入时间条2
+                    MenuHolder.DragEffectEndOut();
+                    timeHolder2.DragEffectEndIn();
+                    timeHolder1.DragEffectEndOut();
+                } else { // 都没进入，回菜单栏
+                    MenuHolder.DragEffectEndIn();
+                    timeHolder1.DragEffectEndOut();
+                    timeHolder2.DragEffectEndOut();
                 }
             }
         }
-        /*
-        if(cookingStep.canDrag)
-        {
-            toPlace = null;
-            if (dragRect.position.x > timeRect1.position.x)
-            {
-                if (dragRect.position.y >= timeRect1.position.y - timeRect1.rect.height &&
-                    dragRect.position.y <= timeRect1.position.y + timeRect1.rect.height)
-                {
-                    toPlace = timeHolder1;
-                }
-                else if (dragRect.position.y <= timeRect2.position.y + timeRect2.rect.height &&
-                          dragRect.position.y >= timeRect2.position.y - timeRect2.rect.height)
-                    toPlace = timeHolder2;
-            }
-            else if (dragRect.position.x <= menuRect.position.x + menuRect.rect.width &&
-                      dragRect.position.x >= menuRect.position.x - menuRect.rect.width &&
-                      dragRect.position.y <= menuRect.position.y + menuRect.rect.height &&
-                      dragRect.position.y >= menuRect.position.y - menuRect.rect.height)
-                toPlace = MenuHolder;
-            Debug.Log(dragRect.position);
-            Debug.Log(menuRect.position);
-            Debug.Log(menuRect.rect);
-            if (toPlace)
-            {
-                Debug.Log(toPlace);
-                toPlace.DragEffectEnd(this);
-                if (fromPlace == toPlace && fromPlace == MenuHolder)
-                    dragRect.position = fromPosition;
-            }
-            else
-            { // 回去
-                dragRect.position = fromPosition;
-                //dragRect.parent = toPlace.transform;
-            }
-        }
-        */
-        
     }
 
     public void SetDragSize(Vector2 size)
