@@ -40,6 +40,7 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             MenuHolder.DragEffectBegin(this);
             timeHolder1.DragEffectBegin(this);
             timeHolder2.DragEffectBegin(this);
+
         }
     }
 
@@ -51,18 +52,19 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     public void OnEndDrag(PointerEventData eventData) {
         if (cookingStep.canDrag) {
             if (cookingStep.Belong) { // 从时间条往外拖
+                cookingStep.Belong.DeleteOrder();
                 if (timeHolder1.ShadowRender.GetAlpha() < 0.5 && timeHolder2.ShadowRender.GetAlpha() < 0.5) {
                     // 步骤没有进入任何一个时间条，需要往菜单栏走
                     MenuHolder.DragEffectEndIn();
                     timeHolder1.DragEffectEndOut();
                     timeHolder2.DragEffectEndOut();
                 } else if (cookingStep.Belong.ShadowRender.GetAlpha() < 0.5) {
-                    // 步骤还在原来的时间条区域内
+                    // 步骤去了另一个时间条的区域
                     MenuHolder.DragEffectEndOut();
                     cookingStep.Belong.DragEffectEndOut();
                     (cookingStep.Belong == timeHolder1 ? timeHolder2 : timeHolder1).DragEffectEndIn();
                 } else {
-                    // 步骤去了另一个时间条的区域
+                    // 步骤还在原来的时间条区域内
                     MenuHolder.DragEffectEndOut();
                     cookingStep.Belong.DragEffectEndIn();
                     (cookingStep.Belong == timeHolder1 ? timeHolder2 : timeHolder1).DragEffectEndOut();
