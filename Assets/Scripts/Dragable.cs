@@ -5,6 +5,7 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
     // offset: 鼠标拖动前点击位置和物体原点位移
     [SerializeField] public Vector2 offset;
+    
     //Holder
     private TimeHolder timeHolder1;
     private TimeHolder timeHolder2;
@@ -16,7 +17,10 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     private RectTransform menuRect;
     //step
     private CookingStep cookingStep;
-
+    //clock
+    private Transform[] children;
+    private Transform clock;
+    
     void Start() {
         dragRect = GetComponent<RectTransform>();
         transform.SetSiblingIndex(1); // 把这个物体放在最上，防止按不到
@@ -29,9 +33,22 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         timeRect1 = timeHolder1.GetComponent<RectTransform>();
         timeRect2 = timeHolder2.GetComponent<RectTransform>();
         cookingStep = this.GetComponent<CookingStep>();
-    }
-    
 
+        children = GetComponentsInChildren<Transform>();
+        clock = children[2];
+    }
+    private void Update()
+    {
+        timeimage();
+    }
+    //把菜拖上去把时间去掉
+    private void timeimage()
+    {
+        if (cookingStep.Belong){
+            clock.gameObject.SetActive(false);
+        }
+        else clock.gameObject.SetActive(true);
+    }
     public void OnBeginDrag(PointerEventData eventData) {
         offset = eventData.position - new Vector2(dragRect.position.x, dragRect.position.y);
         if (cookingStep.canDrag)
