@@ -42,6 +42,13 @@ public class TimeHolder: Place {
         if (ShadowRender.GetAlpha() > 0.5) ShadowRender.SetAlpha(0);
     }
 
+    private float position2anchorposition(RectTransform x, RectTransform y) {
+        Vector2 anchorpostion;
+        Vector2 screenP = RectTransformUtility.WorldToScreenPoint(null, x.position);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(y, screenP, null, out anchorpostion);
+        return anchorpostion.x;
+    }
+
     // Update is called once per frame
     void Update() {
         if (dragRect) {
@@ -53,13 +60,14 @@ public class TimeHolder: Place {
             if (SelfRectRect.Contains(dragRect.position)
                 && SelfRectRect.Contains(new Vector2(dragRect.position.x, dragRect.position.y) + dragRect.sizeDelta))
             { // 在区域内
-                startTime = (int)((dragRect.position.x - SelfRect.position.x) / minScale);
+                startTime = (int)(position2anchorposition(dragRect, SelfRect) / minScale);
                 if (isFirst)
                 {
                     oldStartTime = startTime;
                     isFirst = false;
                 }
                 float relativex = startTime * minScale;
+                Debug.Log(dragRect.position.x + " " + SelfRect.position.x);
                 ShadowRect.anchoredPosition = new Vector2(relativex, 0); // 阴影和物体及格子对齐
                 //Debug.Log(relativex);
                 List<Rect> HoldSteps =
