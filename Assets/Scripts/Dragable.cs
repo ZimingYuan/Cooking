@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
 
@@ -41,13 +42,20 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     {
         timeimage();
     }
-    //把菜拖上去把时间去掉
+    //把菜拖上去把时间去掉并把背景弄不透明
     private void timeimage()
     {
-        if (cookingStep.Belong){
+        if (cookingStep.Belong) {
             clock.gameObject.SetActive(false);
+            Color color = GetComponent<Image>().color;
+            color.a = 1;
+            GetComponent<Image>().color = color;
+        } else {
+            clock.gameObject.SetActive(true);
+            Color color = GetComponent<Image>().color;
+            color.a = 0;
+            GetComponent<Image>().color = color;
         }
-        else clock.gameObject.SetActive(true);
     }
     public void OnBeginDrag(PointerEventData eventData) {
         offset = eventData.position - new Vector2(dragRect.position.x, dragRect.position.y);

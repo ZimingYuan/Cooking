@@ -73,8 +73,10 @@ public class MenuHolder: Place {
             Sprite sprite = Resources.Load<Sprite>(path);
             Image t = cs.GetComponentsInChildren<Image>()[1];
             t.sprite = sprite; t.preserveAspect = true;
-            Text timeText = cs.GetComponentInChildren<Text>();
-            timeText.text = cs.Time.ToString();
+            Text timeText = cs.GetComponentsInChildren<Text>()[0];
+            timeText.text = cs.Time.ToString() + " min";
+            Text nameText = cs.GetComponentsInChildren<Text>()[1];
+            nameText.text = cs.Name;
             JsonData depend = jd[i]["前置条件"];
             foreach (JsonData j in depend) cs.DirectDepend.Add(gameController.stepCollection.FindByName((string)j));
         }
