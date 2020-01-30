@@ -1,10 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using LitJson;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using LitJson;
+using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class MenuHolder: Place {
 
@@ -17,7 +17,7 @@ public class MenuHolder: Place {
 
     void Start() {
         gameController = GameController.GetInstance();
-        InitializedMenu("/Jsons/test.json");
+        InitializedMenu("Jsons/test"); // Resources文件夹下读取文件不用后缀名
     }
 
     void Update() {
@@ -55,9 +55,10 @@ public class MenuHolder: Place {
 
     private void InitializedMenu(string filename)
     {
-        StreamReader streamreader = new StreamReader(Application.dataPath + filename);
-        JsonReader jr = new JsonReader(streamreader);
-        JsonData jd = JsonMapper.ToObject(jr);
+        //StreamReader streamreader = new StreamReader(Application.dataPath + filename);
+        //JsonReader jr = new JsonReader(streamreader);
+        //JsonData jd = JsonMapper.ToObject(jr);
+        JsonData jd = JsonMapper.ToObject(Resources.Load<TextAsset>(filename).text);
         foreach (JsonData i in jd)
         {
             CookingStep cs = new CookingStep((string)i["名字"], (int)i["持续时间"], (bool)i["能否同时"],(string)i["图片"]);
@@ -73,9 +74,9 @@ public class MenuHolder: Place {
             Sprite sprite = Resources.Load<Sprite>(path);
             Image t = cs.GetComponentsInChildren<Image>()[1];
             t.sprite = sprite; t.preserveAspect = true;
-            Text timeText = cs.GetComponentsInChildren<Text>()[0];
+            Text timeText = cs.GetComponentsInChildren<Text>().Where(x => x.name == "Time").First();
             timeText.text = cs.Time.ToString() + " min";
-            Text nameText = cs.GetComponentsInChildren<Text>()[1];
+            Text nameText = cs.GetComponentsInChildren<Text>().Where(x => x.name == "Name").First();
             nameText.text = cs.Name;
             JsonData depend = jd[i]["前置条件"];
             foreach (JsonData j in depend) cs.DirectDepend.Add(gameController.stepCollection.FindByName((string)j));

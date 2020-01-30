@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Linq;
 
-public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
+public class Dragable : MonoBehaviour {
 
     // offset: 鼠标拖动前点击位置和物体原点位移
     [SerializeField] public Vector2 offset;
@@ -33,31 +34,44 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         menuRect = MenuHolder.transform.parent.GetComponent<RectTransform>();
         timeRect1 = timeHolder1.GetComponent<RectTransform>();
         timeRect2 = timeHolder2.GetComponent<RectTransform>();
-        cookingStep = this.GetComponent<CookingStep>();
+        cookingStep = GetComponent<CookingStep>();
 
         children = GetComponentsInChildren<Transform>();
-        clock = children[2];
+        clock = children.Where(x => x.name == "ClockImage").First();
     }
     private void Update()
     {
         timeimage();
     }
-    //把菜拖上去把时间去掉并把背景弄不透明
     private void timeimage()
     {
         if (cookingStep.Belong) {
-            clock.gameObject.SetActive(false);
+            clock.gameObject.SetActive(false); // 时间图片隐藏
             Color color = GetComponent<Image>().color;
             color.a = 1;
-            GetComponent<Image>().color = color;
+            GetComponent<Image>().color = color; // 背景出现
+            RectTransform rt = children.Where(x => x.name == "Image").First().GetComponent<RectTransform>();
+            rt.offsetMax = new Vector2(0, 0); // 把步骤图片（接受拖动事件的区域）居中并放大
+            rt.GetComponent<CanvasRenderer>().SetAlpha(0); // 隐藏步骤图片
+            Text nameText = GetComponentsInChildren<Text>().Where(x => x.name == "Name").First();
+            nameText.GetComponent<RectTransform>().anchoredPosition = Vector2.zero; // 步骤名字居中
+            nameText.GetComponent<RectTransform>().sizeDelta = GetComponent<RectTransform>().sizeDelta;
+            nameText.fontSize = 30; // 步骤名字放大
         } else {
-            clock.gameObject.SetActive(true);
+            clock.gameObject.SetActive(true); // 时间图片出现
             Color color = GetComponent<Image>().color;
             color.a = 0;
-            GetComponent<Image>().color = color;
+            GetComponent<Image>().color = color; // 背景隐藏
+            RectTransform rt = children.Where(x => x.name == "Image").First().GetComponent<RectTransform>();
+            rt.offsetMax = new Vector2(-30, -20); // 把步骤图片（接受拖动事件的区域）居左并缩小
+            rt.GetComponent<CanvasRenderer>().SetAlpha(1); // 步骤图片出现
+            Text nameText = GetComponentsInChildren<Text>().Where(x => x.name == "Name").First();
+            nameText.GetComponent<RectTransform>().anchoredPosition = new Vector2(-15, 40); //步骤名字置顶
+            nameText.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 20);
+            nameText.fontSize = 16; // 步骤名字缩小
         }
     }
-    public void OnBeginDrag(PointerEventData eventData) {
+    public void BeginDrag(PointerEventData eventData) { // 图片接受事件后转发到这里
         offset = eventData.position - new Vector2(dragRect.position.x, dragRect.position.y);
         if (cookingStep.canDrag)
         {
@@ -69,12 +83,12 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         }
     }
 
-    public void OnDrag(PointerEventData eventData) {
+    public void Drag(PointerEventData eventData) {
         if (cookingStep.canDrag)
             dragRect.position = eventData.position - offset;
     }
 
-    public void OnEndDrag(PointerEventData eventData) {
+    public void EndDrag(PointerEventData eventData) {
         if (cookingStep.canDrag) {
             if (cookingStep.Belong) { // 从时间条往外拖
                 cookingStep.Belong.DeleteOrder();

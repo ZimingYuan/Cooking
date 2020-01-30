@@ -36,10 +36,8 @@ public class CookingStepCollection {
                 .Select((x) => x.anchoredPosition.x + x.sizeDelta.x)
                 .Any((x) => x > pos))) {
                 i.GetComponent<Image>().color = new Color(1, 0, 0);
-                i.GetComponentsInChildren<Image>().Where((x) => x.name == "Image").First().color = new Color(1, 0, 0);
             } else {
                 i.GetComponent<Image>().color = new Color(0.9058f, 0.8274f, 0.5647f);
-                i.GetComponentsInChildren<Image>().Where((x) => x.name == "Image").First().color = new Color(1, 1, 1);
             }
         }
     }
