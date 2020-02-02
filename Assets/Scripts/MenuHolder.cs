@@ -72,7 +72,7 @@ public class MenuHolder: Place {
             CookingStep cs = gameController.stepCollection.CookingSteps[i];
             string path = "Images/" + cs.spritePath;
             Sprite sprite = Resources.Load<Sprite>(path);
-            Image t = cs.GetComponentsInChildren<Image>()[1];
+            Image t = cs.GetComponentsInChildren<Image>()[2];
             t.sprite = sprite; t.preserveAspect = true;
             Text timeText = cs.GetComponentsInChildren<Text>().Where(x => x.name == "Time").First();
             timeText.text = cs.Time.ToString() + " min";
