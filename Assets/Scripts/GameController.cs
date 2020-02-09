@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 
 public class GameController :MonoBehaviour
@@ -7,6 +8,8 @@ public class GameController :MonoBehaviour
     //单例
     
     public CookingStepCollection stepCollection;
+    public CanvasGroup finishedPanel;
+    public Text text;
     private static GameController instance = new GameController();
     //Holder
     private TimeHolder timeHolder1;
@@ -27,6 +30,7 @@ public class GameController :MonoBehaviour
 
     private void Start()
     {
+        Screen.SetResolution(1600, 900, false);
         MenuHolder = GameObject.FindWithTag("MenuHolder").GetComponent<MenuHolder>();
         timeHolder1 = GameObject.FindWithTag("TimeHolder1").GetComponent<TimeHolder>();
         timeHolder2 = GameObject.FindWithTag("TimeHolder2").GetComponent<TimeHolder>();
@@ -34,13 +38,22 @@ public class GameController :MonoBehaviour
 
     public void Finish()
     {
-        if(MenuHolder.transform.childCount==0)
+        //if(MenuHolder.transform.childCount==0)
         {
             instance.maxTime = timeHolder1.maxTime > timeHolder2.maxTime ? timeHolder1.maxTime : timeHolder2.maxTime;
             Debug.Log(instance.maxTime);
+            finishedPanel.alpha = 1;
+            finishedPanel.interactable = true;
+            finishedPanel.blocksRaycasts = true;
+            text.text = ("耗时：" + instance.maxTime);
         }
     }
 
-  
+    public void ClosePanel()
+    {
+        finishedPanel.alpha = 0;
+        finishedPanel.interactable = false;
+        finishedPanel.blocksRaycasts = false;
+    }
 
 }

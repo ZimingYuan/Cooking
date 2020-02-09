@@ -17,6 +17,8 @@ public class Dragable : MonoBehaviour {
     private RectTransform timeRect1;
     private RectTransform timeRect2;
     private RectTransform menuRect;
+    RectTransform rt;
+    RectTransform frameImage;
     //step
     private CookingStep cookingStep;
     //clock
@@ -38,6 +40,10 @@ public class Dragable : MonoBehaviour {
 
         children = GetComponentsInChildren<Transform>();
         clock = children.Where(x => x.name == "ClockImage").First();
+
+         rt = children.Where(x => x.name == "Image").First().GetComponent<RectTransform>();
+         frameImage = children.Where(x => x.name == "FrameImage").First().GetComponent<RectTransform>();
+
     }
     private void Update()
     {
@@ -50,25 +56,30 @@ public class Dragable : MonoBehaviour {
             Color color = GetComponent<Image>().color;
             color.a = 1;
             GetComponent<Image>().color = color; // 背景出现
-            RectTransform rt = children.Where(x => x.name == "Image").First().GetComponent<RectTransform>();
             rt.offsetMax = new Vector2(0, 0); // 把步骤图片（接受拖动事件的区域）居中并放大
             rt.GetComponent<CanvasRenderer>().SetAlpha(0); // 隐藏步骤图片
             Text nameText = GetComponentsInChildren<Text>().Where(x => x.name == "Name").First();
             nameText.GetComponent<RectTransform>().anchoredPosition = Vector2.zero; // 步骤名字居中
             nameText.GetComponent<RectTransform>().sizeDelta = GetComponent<RectTransform>().sizeDelta;
-            nameText.fontSize = 30; // 步骤名字放大
+            nameText.fontSize = 20; // 步骤名字放大
+            //frameImage.GetComponent<CanvasRenderer>().SetAlpha(0);
+            frameImage.anchoredPosition = Vector2.zero;
+            frameImage.sizeDelta = GetComponent<RectTransform>().sizeDelta;
+
         } else {
             clock.gameObject.SetActive(true); // 时间图片出现
             Color color = GetComponent<Image>().color;
             color.a = 0;
             GetComponent<Image>().color = color; // 背景隐藏
-            RectTransform rt = children.Where(x => x.name == "Image").First().GetComponent<RectTransform>();
             rt.offsetMax = new Vector2(-30, -20); // 把步骤图片（接受拖动事件的区域）居左并缩小
             rt.GetComponent<CanvasRenderer>().SetAlpha(1); // 步骤图片出现
             Text nameText = GetComponentsInChildren<Text>().Where(x => x.name == "Name").First();
             nameText.GetComponent<RectTransform>().anchoredPosition = new Vector2(-15, 40); //步骤名字置顶
             nameText.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 20);
             nameText.fontSize = 16; // 步骤名字缩小
+
+            frameImage.anchoredPosition = new Vector2(-10, -10);
+            frameImage.sizeDelta = new Vector2(110, 80);
         }
     }
     public void BeginDrag(PointerEventData eventData) { // 图片接受事件后转发到这里
