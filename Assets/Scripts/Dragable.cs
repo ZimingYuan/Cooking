@@ -59,12 +59,29 @@ public class Dragable : MonoBehaviour {
             rt.offsetMax = new Vector2(0, 0); // 把步骤图片（接受拖动事件的区域）居中并放大
             rt.GetComponent<CanvasRenderer>().SetAlpha(0); // 隐藏步骤图片
             Text nameText = GetComponentsInChildren<Text>().Where(x => x.name == "Name").First();
-            nameText.GetComponent<RectTransform>().anchoredPosition = Vector2.zero; // 步骤名字居中
-            nameText.GetComponent<RectTransform>().sizeDelta = GetComponent<RectTransform>().sizeDelta;
+            //nameText.GetComponent<RectTransform>().anchoredPosition = Vector2.zero; // 步骤名字居中
+            
             nameText.fontSize = 20; // 步骤名字放大
             //frameImage.GetComponent<CanvasRenderer>().SetAlpha(0);
-            frameImage.anchoredPosition = Vector2.zero;
-            frameImage.sizeDelta = GetComponent<RectTransform>().sizeDelta;
+            if(cookingStep.Belong ==timeHolder1)
+            {
+                nameText.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 7);
+                frameImage.anchoredPosition = new Vector2(0, 7);
+                Vector2 size = GetComponent<RectTransform>().sizeDelta;
+                frameImage.sizeDelta = size + new Vector2(0, 12);
+            }
+            else
+            {
+                nameText.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -7);
+                frameImage.anchoredPosition = new Vector2(0, -7);
+                Vector2 size = GetComponent<RectTransform>().sizeDelta;
+                frameImage.sizeDelta = size + new Vector2(0, 12);
+            }
+            nameText.GetComponent<RectTransform>().sizeDelta = GetComponent<RectTransform>().sizeDelta;
+            
+            
+            //frameImage.sizeDelta = GetComponent<RectTransform>().sizeDelta;
+           
 
         } else {
             clock.gameObject.SetActive(true); // 时间图片出现
