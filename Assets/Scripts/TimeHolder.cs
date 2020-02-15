@@ -25,7 +25,7 @@ public class TimeHolder: Place {
     private Rect SelfRectRect;
 
     void Start() {
-        SelfRect = GetComponentsInChildren<RectTransform>().Where(x => x.name == "GridContent").First();
+        SelfRect = GetComponentsInChildren<RectTransform>().Where(x => x.name == "StepContent").First();
         ShadowRect = GetComponentsInChildren<RectTransform>().Where(x => x.name == "ShadowModel").First();
         ShadowRender = GetComponentsInChildren<CanvasRenderer>().Where(x => x.name == "ShadowModel").First();
         menuHolder = GameObject.FindWithTag("MenuHolder").transform;

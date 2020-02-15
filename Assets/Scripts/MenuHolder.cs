@@ -13,11 +13,12 @@ public class MenuHolder: Place {
     GameController gameController;
     private Dragable drag;
 
-    private Vector2 unitSize = new Vector2(200, 100); // 在菜单栏里的步骤的大小
+    private Vector2 unitSize; // 在菜单栏里的步骤的大小
 
     void Start() {
         gameController = GameController.GetInstance();
         InitializedMenu("Jsons/test"); // Resources文件夹下读取文件不用后缀名
+        unitSize = stepPrefab.GetComponent<RectTransform>().sizeDelta;
     }
 
     void Update() {
@@ -70,7 +71,7 @@ public class MenuHolder: Place {
         for (int i = 0; i < jd.Count; i++)
         {
             CookingStep cs = gameController.stepCollection.CookingSteps[i];
-            string path = "Images/" + cs.spritePath;
+            string path = "Images/步骤/" + cs.spritePath;
             Sprite sprite = Resources.Load<Sprite>(path);
             Image t = cs.GetComponentsInChildren<Image>()[2];
             t.sprite = sprite; t.preserveAspect = true;
