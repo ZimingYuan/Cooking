@@ -21,9 +21,6 @@ public class TimeHolder: Place {
     GameController gameController;
     public int[] Order = new int[50];
 
-    // 自己的有效区域
-    private Rect SelfRectRect;
-
     void Start() {
         SelfRect = GetComponentsInChildren<RectTransform>().Where(x => x.name == "StepContent").First();
         ShadowRect = GetComponentsInChildren<RectTransform>().Where(x => x.name == "ShadowModel").First();
@@ -42,34 +39,30 @@ public class TimeHolder: Place {
         if (ShadowRender.GetAlpha() > 0.5) ShadowRender.SetAlpha(0);
     }
 
-    private float position2anchorposition(RectTransform x, RectTransform y) {
-        Vector2 anchorpostion;
+    private Vector2 position2anchorposition(RectTransform x, RectTransform y) {
+        Vector2 anchorposition;
         Vector2 screenP = RectTransformUtility.WorldToScreenPoint(null, x.position);
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(y, screenP, null, out anchorpostion);
-        return anchorpostion.x;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(y, screenP, null, out anchorposition);
+        return anchorposition;
     }
 
     // Update is called once per frame
     void Update() {
         if (dragRect) {
-            SelfRectRect = new Rect(SelfRect.position.x, SelfRect.position.y - 100,
-                SelfRect.sizeDelta.x + dragRect.sizeDelta.x, SelfRect.sizeDelta.y + 200);
-            //Debug.Log(dragRect.position);
-            //Debug.Log(SelfRect);
+            Rect SelfRectRect = new Rect(0, -50, SelfRect.sizeDelta.x + dragRect.sizeDelta.x, SelfRect.sizeDelta.y + 100);
+            Vector2 DragPos = position2anchorposition(dragRect, SelfRect);
             // 边界矩形
-            if (SelfRectRect.Contains(dragRect.position)
-                && SelfRectRect.Contains(new Vector2(dragRect.position.x, dragRect.position.y) + dragRect.sizeDelta))
+            // Debug.Log(SelfRectRect + " " + dragRect.position + " " + (new Vector2(dragRect.position.x, dragRect.position.y) + dragRect.sizeDelta));
+            if (SelfRectRect.Contains(DragPos) && SelfRectRect.Contains(DragPos + dragRect.sizeDelta))
             { // 在区域内
-                startTime = (int)(position2anchorposition(dragRect, SelfRect) / minScale);
+                startTime = (int)(DragPos.x / minScale);
                 if (isFirst)
                 {
                     oldStartTime = startTime;
                     isFirst = false;
                 }
                 float relativex = startTime * minScale;
-                Debug.Log(dragRect.position.x + " " + SelfRect.position.x);
                 ShadowRect.anchoredPosition = new Vector2(relativex, 0); // 阴影和物体及格子对齐
-                //Debug.Log(relativex);
                 List<Rect> HoldSteps =
                     new List<RectTransform>(GetComponentsInChildren<RectTransform>())
                     .Where(x => x.name.StartsWith("StepModel"))
@@ -110,7 +103,6 @@ public class TimeHolder: Place {
             if (step.DependNotSatisfied.Count == 0)
                 step.canDrag = true;
         }
-        //Debug.Log(startTime);
         AddOrder();
         dragStep.Belong = this; dragStep = null;  dragRect = null;
         HideShadow(); ShadowRect.SetAsFirstSibling();
@@ -132,14 +124,11 @@ public class TimeHolder: Place {
 
     void CheckMax()
     {
-        //for (int i = 0; i < 6; i++)
-        //    Debug.Log(Order[i]);
         bool iszero = true;
         for(int i = maxTime - 1; i >= 0; i--)
             if (Order[i] == 1)
             {
                 maxTime = i + 1;
-                Debug.Log(maxTime);
                 iszero = false;
                 break;
             }
@@ -152,12 +141,10 @@ public class TimeHolder: Place {
         FullOrder(startTime, dragStep.Time, 1);
         int finishedTime = startTime + dragStep.Time;
         maxTime = maxTime > finishedTime ? maxTime : finishedTime;
-        Debug.Log("maxTime" + maxTime);
     }
 
     public void DeleteOrder()
     {
-        //Debug.Log(oldStartTime);
         FullOrder(oldStartTime, dragStep.Time, 0);
         CheckMax();
     }
