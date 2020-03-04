@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 5799617105224917726}
   - component: {fileID: 1537822939616126030}
   - component: {fileID: 7494854514852314804}
-  - component: {fileID: 2453272872209634514}
+  - component: {fileID: 3024937260214135699}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -152,8 +152,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -10.4325, y: 0}
-  m_SizeDelta: {x: -39.135002, y: -40}
+  m_AnchoredPosition: {x: -10.5, y: 0}
+  m_SizeDelta: {x: -39, y: -40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1537822939616126030
 CanvasRenderer:
@@ -191,7 +191,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2453272872209634514
+--- !u!114 &3024937260214135699
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

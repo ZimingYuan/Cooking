@@ -41,6 +41,7 @@ public class MenuHolder: Place {
                 step.GetComponent<Dragable>().SetDragSize(unitSize);
                 step.canDrag = false;
                 step.Belong = null;
+                step.GetComponent<Dragable>().ImageChange();
             }
         }
         drag.transform.SetParent(transform);
@@ -60,15 +61,17 @@ public class MenuHolder: Place {
         //JsonReader jr = new JsonReader(streamreader);
         //JsonData jd = JsonMapper.ToObject(jr);
         JsonData jd = JsonMapper.ToObject(Resources.Load<TextAsset>(filename).text);
-        foreach (JsonData i in jd)
+        gameController.dishinfo = (string)jd["简介"];
+        gameController.dishinst = (string)jd["详介"];
+        foreach (JsonData i in jd["步骤"])
         {
-            CookingStep cs = new CookingStep((string)i["名字"], (int)i["持续时间"], (bool)i["能否同时"],(string)i["图片"]);
+            CookingStep cs = new CookingStep((string)i["名字"], (int)i["持续时间"], (bool)i["能否同时"],(string)i["图片"], (int)i["台子"]);
             CookingStep tmp = Instantiate(stepPrefab, transform);
             tmp.Copy(cs);
             var drag = tmp.GetComponent<Dragable>();
             gameController.stepCollection.CookingSteps.Add(tmp);
         }
-        for (int i = 0; i < jd.Count; i++)
+        for (int i = 0; i < jd["步骤"].Count; i++)
         {
             CookingStep cs = gameController.stepCollection.CookingSteps[i];
             string path = "Images/步骤/" + cs.spritePath;
@@ -79,7 +82,7 @@ public class MenuHolder: Place {
             timeText.text = cs.Time.ToString() + " min";
             Text nameText = cs.GetComponentsInChildren<Text>().Where(x => x.name == "Name").First();
             nameText.text = cs.Name;
-            JsonData depend = jd[i]["前置条件"];
+            JsonData depend = jd["步骤"][i]["前置条件"];
             foreach (JsonData j in depend) cs.DirectDepend.Add(gameController.stepCollection.FindByName((string)j));
         }
         gameController.stepCollection.CalcDepend();        

@@ -10,12 +10,13 @@ public class GameController :MonoBehaviour
     public CookingStepCollection stepCollection;
     public CanvasGroup finishedPanel;
     public Text text;
+    [HideInInspector] public string dishinfo, dishinst;
     private static GameController instance = new GameController();
     //Holder
     private TimeHolder timeHolder1;
     private TimeHolder timeHolder2;
     private MenuHolder MenuHolder;
-    //
+
     public int maxTime = 0;
 
     private GameController()
