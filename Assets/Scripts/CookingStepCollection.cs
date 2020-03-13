@@ -26,20 +26,30 @@ public class CookingStepCollection {
         CookingSteps.ForEach((x) => x.Depend.ForEach((y) => y.Control.Add(x)));
     }
 
-    public void CheckDepend() { // 把不满足依赖的变成红色，其他变成黄色
-        foreach (var i in CookingSteps) {
-            float pos = i.GetComponent<RectTransform>().anchoredPosition.x;
-            if (i.Belong != null
-            && (i.Depend.Any((x) => x.Belong == null)
-            || i.Depend
-                .Select((x) => x.GetComponent<RectTransform>())
-                .Select((x) => x.anchoredPosition.x + x.sizeDelta.x)
-                .Any((x) => x > pos))) {
-                i.GetComponent<Image>().color = new Color(1, 0, 0);
-            } else {
-                i.GetComponent<Image>().color = new Color(0.9058f, 0.8274f, 0.5647f);
+    // 检查当前时间条上所有步骤是否合法，不合法变红色
+    public void CheckDepend() {
+        var OnTimeHolder = (from x in CookingSteps where x.Belong != null select x).ToList();
+        OnTimeHolder.ForEach((cookingStep) => {
+            Dragable dragable = cookingStep.GetComponent<Dragable>();
+            RectTransform dragRect = dragable.dragRect;
+            bool f1 = (from x in cookingStep.Depend
+                      where x.Belong != null && x != cookingStep
+                      select x.GetComponent<RectTransform>())
+                      .Any((x) => x.anchoredPosition.x + x.sizeDelta.x > dragRect.anchoredPosition.x);
+            Rect t = new Rect(dragRect.anchoredPosition.x, 0, dragRect.sizeDelta.x, 1);
+            bool f2 = (from y in
+                        (from x in CookingSteps
+                         where x.Belong != null && x != cookingStep && (!x.CanParallel && !cookingStep.CanParallel)
+                         select x.GetComponent<RectTransform>())
+                       select new Rect(y.anchoredPosition.x, 0, y.sizeDelta.x, 1))
+                       .Any((x) => x.Overlaps(t));
+            if (f1 || f2) dragable.frameImage.GetComponent<Image>().color = Color.red;
+            else {
+                if (cookingStep.CanParallel) dragable.frameImage.GetComponent<Image>().color = Color.green;
+                else dragable.frameImage.GetComponent<Image>().color = Color.white;
             }
-        }
+        });
     }
+
 
 }

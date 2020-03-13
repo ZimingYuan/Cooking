@@ -13,12 +13,12 @@ public class Dragable : MonoBehaviour {
     private TimeHolder timeHolder2;
     private MenuHolder MenuHolder;
     //RectTransfrom
-    private RectTransform dragRect;
+    [HideInInspector] public RectTransform dragRect;
     private RectTransform timeRect1;
     private RectTransform timeRect2;
     private RectTransform menuRect;
     RectTransform rt;
-    RectTransform frameImage;
+    [HideInInspector] public RectTransform frameImage;
     //step
     private CookingStep cookingStep;
     //clock
@@ -26,6 +26,7 @@ public class Dragable : MonoBehaviour {
     private Transform clock;
 
     private AnimationController animationController;
+    private CookingStepCollection cookingSteps;
     
     void Start() {
         dragRect = GetComponent<RectTransform>();
@@ -47,6 +48,7 @@ public class Dragable : MonoBehaviour {
         frameImage = children.Where(x => x.name == "FrameImage").First().GetComponent<RectTransform>();
 
         animationController = GameObject.Find("AnimationController").GetComponent<AnimationController>();
+        cookingSteps = GameController.GetInstance().stepCollection;
 
     }
     public void BeginDrag(PointerEventData eventData) { // 图片接受事件后转发到这里
@@ -78,6 +80,7 @@ public class Dragable : MonoBehaviour {
             nameText.GetComponent<RectTransform>().sizeDelta = GetComponent<RectTransform>().sizeDelta; // 步骤名字放大
             frameImage.offsetMin = Vector2.zero; // 边框最大化
             frameImage.offsetMax = Vector2.zero;
+            cookingSteps.CheckDepend();
             animationController.Play(cookingStep.workshop);
         } else {
             clock.gameObject.SetActive(true); // 时间图片出现
@@ -90,6 +93,7 @@ public class Dragable : MonoBehaviour {
             nameText.fontSize = 16; // 步骤名字缩小
             frameImage.offsetMin = new Vector2(32, 16); // 边框图片缩小
             frameImage.offsetMax = new Vector2(-54, -16);
+            frameImage.GetComponent<Image>().color = new Color(1, 1, 1);
         }
     }
 

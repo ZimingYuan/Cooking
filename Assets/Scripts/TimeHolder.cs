@@ -106,7 +106,6 @@ public class TimeHolder: Place {
         AddOrder();
         dragStep.Belong = this; dragStep = null;  dragRect = null;
         HideShadow(); ShadowRect.SetAsFirstSibling();
-        gameController.stepCollection.CheckDepend();
     }
 
     public override void DragEffectEndOut() {

@@ -48,7 +48,7 @@ public class MenuHolder: Place {
         drag.GetComponent<CookingStep>().Belong = null;
         drag.SetDragSize(unitSize);
         drag = null;
-        gameController.stepCollection.CheckDepend();
+        // gameController.stepCollection.CheckDepend();
     }
 
     public override void DragEffectEndOut() {
