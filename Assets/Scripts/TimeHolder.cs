@@ -20,16 +20,18 @@ public class TimeHolder: Place {
     public int maxTime = 0;
     GameController gameController;
     public int[] Order = new int[50];
+    private AudioSource OperateSound;
 
     void Start() {
         SelfRect = GetComponentsInChildren<RectTransform>().Where(x => x.name == "StepContent").First();
         ShadowRect = GetComponentsInChildren<RectTransform>().Where(x => x.name == "ShadowModel").First();
         ShadowRender = GetComponentsInChildren<CanvasRenderer>().Where(x => x.name == "ShadowModel").First();
         menuHolder = GameObject.FindWithTag("MenuHolder").transform;
-        gameController = GameController.GetInstance();
+        gameController = FindObjectOfType<GameController>();
         minScale = SelfRect.sizeDelta.x / 30;
         for (int i = 0; i < 50; i++)
             Order[i] = 0;
+        OperateSound = GameObject.Find("OperateSound").GetComponent<AudioSource>();
     }
 
     private void ShowShadow() {
@@ -88,12 +90,14 @@ public class TimeHolder: Place {
     }
 
     public override void DragEffectEndIn() {
+        OperateSound.Play();
         dragRect.position = ShadowRect.position;
         dragRect.sizeDelta = ShadowRect.sizeDelta;
         dragRect.transform.SetParent(SelfRect.transform);
         dragRect.SetAsFirstSibling();
 
         CookingStep deleteStep = dragRect.GetComponent<CookingStep>();
+        deleteStep.StartTime = startTime;
         for (int i = 0; i < menuHolder.childCount; i++) //被依赖的步骤可以拖了
         {
             var stepChild = menuHolder.GetChild(i);

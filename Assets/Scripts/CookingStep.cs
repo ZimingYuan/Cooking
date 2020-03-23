@@ -16,8 +16,9 @@ public class CookingStep: MonoBehaviour{
     public TimeHolder Belong;
     public string spritePath;
     public int workshop; // 对应的动画编号
+    public int StartTime; // 开始时间
 
-    public CookingStep(string name, int time, bool cp,string path, int ws) {
+    public void Init(string name, int time, bool cp,string path, int ws) {
         Name = name; Time = time; CanParallel = cp;
         canDrag = true;
         DirectDepend = new List<CookingStep>();
@@ -26,20 +27,6 @@ public class CookingStep: MonoBehaviour{
         DependNotSatisfied = new List<CookingStep>();
         spritePath = path;
         workshop = ws;
-    }
-
-    public void Copy(CookingStep old)
-    {
-        Name = old.Name;
-        Time = old.Time;
-        CanParallel = old.CanParallel;
-        canDrag = old.canDrag;
-        DirectDepend = old.DirectDepend;
-        Depend = old.Depend;
-        Control = old.Control;
-        DependNotSatisfied = old.DependNotSatisfied;
-        spritePath = old.spritePath;
-        workshop = old.workshop;
     }
 
 }

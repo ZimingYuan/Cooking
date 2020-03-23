@@ -37,12 +37,11 @@ public class CookingStepCollection {
                       select x.GetComponent<RectTransform>())
                       .Any((x) => x.anchoredPosition.x + x.sizeDelta.x > dragRect.anchoredPosition.x);
             Rect t = new Rect(dragRect.anchoredPosition.x, 0, dragRect.sizeDelta.x, 1);
-            bool f2 = (from y in
-                        (from x in CookingSteps
-                         where x.Belong != null && x != cookingStep && (!x.CanParallel && !cookingStep.CanParallel)
-                         select x.GetComponent<RectTransform>())
-                       select new Rect(y.anchoredPosition.x, 0, y.sizeDelta.x, 1))
-                       .Any((x) => x.Overlaps(t));
+            bool f2 = CookingSteps
+            .Where((x) => x.Belong != null && x != cookingStep && (!x.CanParallel && !cookingStep.CanParallel))
+            .Select((x) => x.GetComponent<RectTransform>())
+            .Select((x) => new Rect(x.anchoredPosition.x, 0, x.sizeDelta.x, 1))
+            .Any((x) => x.Overlaps(t));
             if (f1 || f2) dragable.frameImage.GetComponent<Image>().color = Color.red;
             else {
                 if (cookingStep.CanParallel) dragable.frameImage.GetComponent<Image>().color = Color.green;

@@ -47,8 +47,8 @@ public class Dragable : MonoBehaviour {
         rt = children.Where(x => x.name == "Image").First().GetComponent<RectTransform>();
         frameImage = children.Where(x => x.name == "FrameImage").First().GetComponent<RectTransform>();
 
-        animationController = GameObject.Find("AnimationController").GetComponent<AnimationController>();
-        cookingSteps = GameController.GetInstance().stepCollection;
+        animationController = FindObjectOfType<AnimationController>();
+        cookingSteps = FindObjectOfType<GameController>().stepCollection;
 
     }
     public void BeginDrag(PointerEventData eventData) { // 图片接受事件后转发到这里

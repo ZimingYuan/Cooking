@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class Ruler : MonoBehaviour {
 
-    [SerializeField] private Text NumberModel;
+    [SerializeField] private Text NumberModel = null;
     private float width;
 
     void Start() {

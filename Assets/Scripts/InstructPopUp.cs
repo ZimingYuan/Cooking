@@ -2,14 +2,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InstructMenu : MonoBehaviour {
+public class InstructPopUp : TurnPage {
 
     private string dishinfo, dishinst;
     private Text title, text;
     private GameObject left, right;
 
     void Start() {
-        GameController gc = GameController.GetInstance();
+        GameController gc = FindObjectOfType<GameController>();
         dishinfo = gc.dishinfo; dishinst = gc.dishinst;
         title = GetComponentsInChildren<Text>().Where(x => x.name == "Title").First();
         text = GetComponentsInChildren<Text>().Where(x => x.name == "Text").First();
@@ -18,7 +18,7 @@ public class InstructMenu : MonoBehaviour {
         ClickHandle(false);
     }
 
-    public void ClickHandle(bool isRight) { // 处理左右翻页
+    public override void ClickHandle(bool isRight) { // 处理左右翻页
         if (! isRight) {
             left.SetActive(false);
             right.SetActive(true);

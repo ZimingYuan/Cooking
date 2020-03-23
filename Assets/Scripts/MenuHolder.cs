@@ -8,7 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class MenuHolder: Place {
 
-    [SerializeField] private CookingStep stepPrefab;
+    [SerializeField] private CookingStep stepPrefab = null;
     List<CookingStep> steps;
     GameController gameController;
     private Dragable drag;
@@ -16,7 +16,7 @@ public class MenuHolder: Place {
     private Vector2 unitSize; // 在菜单栏里的步骤的大小
 
     void Start() {
-        gameController = GameController.GetInstance();
+        gameController = FindObjectOfType<GameController>();
         InitializedMenu("Jsons/test"); // Resources文件夹下读取文件不用后缀名
         unitSize = stepPrefab.GetComponent<RectTransform>().sizeDelta;
     }
@@ -65,11 +65,10 @@ public class MenuHolder: Place {
         gameController.dishinst = (string)jd["详介"];
         foreach (JsonData i in jd["步骤"])
         {
-            CookingStep cs = new CookingStep((string)i["名字"], (int)i["持续时间"], (bool)i["能否同时"],(string)i["图片"], (int)i["台子"]);
-            CookingStep tmp = Instantiate(stepPrefab, transform);
-            tmp.Copy(cs);
-            var drag = tmp.GetComponent<Dragable>();
-            gameController.stepCollection.CookingSteps.Add(tmp);
+            CookingStep cs = Instantiate(stepPrefab, transform);
+            cs.Init((string)i["名字"], (int)i["持续时间"], (bool)i["能否同时"],(string)i["图片"], (int)i["台子"]);
+            var drag = cs.GetComponent<Dragable>();
+            gameController.stepCollection.CookingSteps.Add(cs);
         }
         for (int i = 0; i < jd["步骤"].Count; i++)
         {
