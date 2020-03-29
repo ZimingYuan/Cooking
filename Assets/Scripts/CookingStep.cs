@@ -6,7 +6,7 @@ public class CookingStep: MonoBehaviour{
     public string Name;
     public int Time; // 持续时间
     public bool CanParallel; // 能否同时
-    public bool canDrag = true;
+    // public bool canDrag = true;
     public int ID;
     public float LastRight = -1000; //记录前依赖点的最右
     public List<CookingStep> DirectDepend; // 直接依赖的步骤,在游戏开始后不要修改
@@ -20,7 +20,7 @@ public class CookingStep: MonoBehaviour{
 
     public void Init(string name, int time, bool cp,string path, int ws) {
         Name = name; Time = time; CanParallel = cp;
-        canDrag = true;
+        // canDrag = true;
         DirectDepend = new List<CookingStep>();
         Depend = new List<CookingStep>();
         Control = new List<CookingStep>();

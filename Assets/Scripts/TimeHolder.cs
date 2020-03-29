@@ -98,7 +98,7 @@ public class TimeHolder: Place {
 
         CookingStep deleteStep = dragRect.GetComponent<CookingStep>();
         deleteStep.StartTime = startTime;
-        for (int i = 0; i < menuHolder.childCount; i++) //被依赖的步骤可以拖了
+        /* for (int i = 0; i < menuHolder.childCount; i++) //被依赖的步骤可以拖了
         {
             var stepChild = menuHolder.GetChild(i);
             var step = stepChild.GetComponent<CookingStep>();
@@ -106,7 +106,7 @@ public class TimeHolder: Place {
                 step.DependNotSatisfied.Remove(deleteStep);
             if (step.DependNotSatisfied.Count == 0)
                 step.canDrag = true;
-        }
+        } */
         AddOrder();
         dragStep.Belong = this; dragStep = null;  dragRect = null;
         HideShadow(); ShadowRect.SetAsFirstSibling();

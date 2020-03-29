@@ -42,7 +42,8 @@ public class CookingStepCollection {
             .Select((x) => x.GetComponent<RectTransform>())
             .Select((x) => new Rect(x.anchoredPosition.x, 0, x.sizeDelta.x, 1))
             .Any((x) => x.Overlaps(t));
-            if (f1 || f2) dragable.frameImage.GetComponent<Image>().color = Color.red;
+            bool f3 = cookingStep.Depend.Any((x) => x.Belong == null);
+            if (f1 || f2 || f3) dragable.frameImage.GetComponent<Image>().color = Color.red;
             else {
                 if (cookingStep.CanParallel) dragable.frameImage.GetComponent<Image>().color = Color.green;
                 else dragable.frameImage.GetComponent<Image>().color = Color.white;

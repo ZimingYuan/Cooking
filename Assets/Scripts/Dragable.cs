@@ -53,18 +53,19 @@ public class Dragable : MonoBehaviour {
     }
     public void BeginDrag(PointerEventData eventData) { // 图片接受事件后转发到这里
         offset = eventData.position - new Vector2(dragRect.position.x, dragRect.position.y);
-        if (cookingStep.canDrag)
-        {
+
+        // if (cookingStep.canDrag)
+        // {
             transform.SetParent(MenuHolder.transform.parent.parent);
             MenuHolder.DragEffectBegin(this);
             timeHolder1.DragEffectBegin(this);
             timeHolder2.DragEffectBegin(this);
 
-        }
+        // }
     }
 
     public void Drag(PointerEventData eventData) {
-        if (cookingStep.canDrag)
+        // if (cookingStep.canDrag)
             dragRect.position = eventData.position - offset;
     }
 
@@ -80,7 +81,7 @@ public class Dragable : MonoBehaviour {
             nameText.GetComponent<RectTransform>().sizeDelta = GetComponent<RectTransform>().sizeDelta; // 步骤名字放大
             frameImage.offsetMin = Vector2.zero; // 边框最大化
             frameImage.offsetMax = Vector2.zero;
-            cookingSteps.CheckDepend();
+            // cookingSteps.CheckDepend();
             animationController.Play(cookingStep.workshop);
         } else {
             clock.gameObject.SetActive(true); // 时间图片出现
@@ -98,7 +99,7 @@ public class Dragable : MonoBehaviour {
     }
 
     public void EndDrag(PointerEventData eventData) {
-        if (cookingStep.canDrag) {
+        // if (cookingStep.canDrag) {
             if (cookingStep.Belong) { // 从时间条往外拖
                 cookingStep.Belong.DeleteOrder();
                 if (timeHolder1.ShadowRender.GetAlpha() < 0.5 && timeHolder2.ShadowRender.GetAlpha() < 0.5) {
@@ -133,7 +134,8 @@ public class Dragable : MonoBehaviour {
                 }
             }
             ImageChange();
-        }
+        // }
+        cookingSteps.CheckDepend();
     }
 
     public void SetDragSize(Vector2 size)

@@ -6,9 +6,11 @@ public class OpenCount : MonoBehaviour {
 
     private CookingStepCollection csp;
     [SerializeField] GameObject Black = null, Count = null;
+    private AudioSource FailSound;
 
     void Start() {
         csp = FindObjectOfType<GameController>().stepCollection;
+        FailSound = GameObject.Find("FailSound").GetComponent<AudioSource>();
     }
 
     public void Click() {
@@ -25,7 +27,7 @@ public class OpenCount : MonoBehaviour {
             int MaxTime = csp.CookingSteps.Select((x) => x.StartTime + x.Time).Max();
             Count.GetComponentsInChildren<Text>().Where((x) => x.name == "Text").First()
                 .text = string.Format("你的过关时间为：{0}分钟", MaxTime);
-        }
+        } else FailSound.Play();
 
     }
 }

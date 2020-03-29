@@ -32,7 +32,7 @@ public class MenuHolder: Place {
     public override void DragEffectEndIn() {
 
         CookingStep addStep = drag.GetComponent<CookingStep>(); // 被拖的步骤
-        foreach(var step in addStep.Control) // 依赖addStep且在时间条上的自动弹回菜单栏
+        /* foreach(var step in addStep.Control) // 依赖addStep且在时间条上的自动弹回菜单栏
         {
             if(!step.DependNotSatisfied.Exists(t => t.name == addStep.name))
             {
@@ -43,12 +43,11 @@ public class MenuHolder: Place {
                 step.Belong = null;
                 step.GetComponent<Dragable>().ImageChange();
             }
-        }
+        } */
         drag.transform.SetParent(transform);
         drag.GetComponent<CookingStep>().Belong = null;
         drag.SetDragSize(unitSize);
         drag = null;
-        // gameController.stepCollection.CheckDepend();
     }
 
     public override void DragEffectEndOut() {
@@ -91,13 +90,13 @@ public class MenuHolder: Place {
             )
         );
 
-        foreach(var step in gameController.stepCollection.CookingSteps)
+        /* foreach(var step in gameController.stepCollection.CookingSteps)
         {
             if (step.DependNotSatisfied.Count > 0)
             {
                 step.canDrag = false;
             }
-        }
+        } */
     }
 
 
